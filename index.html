@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Necronomicon Ex-Mortis — Digital Experience</title>
+  
+  <!-- Occult Editorial Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dormant.css">
+  <link rel="stylesheet" href="css/awakening.css">
+  <link rel="stylesheet" href="css/converse.css">
+  <link rel="stylesheet" href="css/vision.css">
+  <link rel="stylesheet" href="css/rituals.css">
+  <link rel="stylesheet" href="css/archives-relics.css">
+</head>
+<body>
+
+  <!-- Fullscreen Atmospheric Viewport -->
+  <div id="app-viewport">
+    
+    <!-- Cinematic Vignette & Occult Film Grain Overlay -->
+    <div class="cinema-vignette" aria-hidden="true"></div>
+    <div class="cinema-grain" aria-hidden="true"></div>
+
+    <!-- Cinematic Fullscreen Video Animation Layer for Opening Sequence -->
+    <div id="cinematic-video-overlay" class="cinematic-video-overlay" aria-hidden="true">
+      <video id="opening-cinematic-video" class="cinematic-video-player" playsinline preload="auto">
+        <source src="assets/main ui/dormant state/opening animation.mp4" type="video/mp4">
+      </video>
+      <button type="button" class="cinematic-skip-btn" id="btn-skip-opening">SKIP [ESC]</button>
+    </div>
+
+    <!-- Seamless Pure Black Screen Transition Curtain -->
+    <div id="opening-black-curtain" class="opening-black-curtain" aria-hidden="true"></div>
+
+
+    <!-- =======================================================================
+         SHARED TOP NAVIGATION (Active across screens 3, 4, 5, 6, 7)
+         ======================================================================= -->
+    <header class="shared-top-nav" id="shared-top-nav">
+      <a href="#" class="brand-wrapper" id="brand-link" aria-label="Necronomicon Homepage">
+        <svg class="occult-emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+          <circle cx="50" cy="50" r="42" stroke-width="1.6" />
+          <circle cx="50" cy="50" r="28" stroke-width="1.2" stroke-dasharray="3 3" />
+          <circle cx="50" cy="50" r="14" stroke-width="1.4" />
+          <line x1="50" y1="6" x2="50" y2="94" stroke-width="1.5" />
+          <line x1="6" y1="50" x2="94" y2="50" stroke-width="1.5" />
+          <polygon points="50,2 45,14 55,14" fill="currentColor" stroke="none" />
+          <polygon points="50,98 45,86 55,86" fill="currentColor" stroke="none" />
+          <polygon points="2,50 14,45 14,55" fill="currentColor" stroke="none" />
+          <polygon points="98,50 86,45 86,55" fill="currentColor" stroke="none" />
+          <line x1="20" y1="20" x2="80" y2="80" stroke-width="1.3" />
+          <line x1="20" y1="80" x2="80" y2="20" stroke-width="1.3" />
+          <polygon points="17,17 21,26 26,21" fill="currentColor" stroke="none" />
+          <polygon points="83,83 79,74 74,79" fill="currentColor" stroke="none" />
+          <polygon points="17,83 26,79 21,74" fill="currentColor" stroke="none" />
+          <polygon points="83,17 74,21 79,26" fill="currentColor" stroke="none" />
+          <circle cx="50" cy="50" r="3.5" fill="currentColor" />
+        </svg>
+        <div class="brand-text-col">
+          <span class="brand-title">NECRONOMICON</span>
+          <span class="brand-subtitle" id="brand-status-subtitle">AWAKENED</span>
+        </div>
+      </a>
+
+      <!-- Right Nav Controls: Sound, Settings (Exactly 2 circular controls, matching reference 2) -->
+      <div class="top-nav-controls">
+        <div class="instability-pill" id="instability-pill" title="Current Entity Instability Level" style="display: none !important;">
+          <span class="instability-dot" id="instability-dot"></span>
+          <span class="instability-text">INSTABILITY:</span>
+          <span class="instability-val" id="instability-val">0%</span>
+        </div>
+
+        <button type="button" class="icon-btn top-ctrl-btn" id="btn-toggle-sound" aria-label="Toggle Sound">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </button>
+
+        <button type="button" class="icon-btn top-ctrl-btn" id="btn-settings" aria-label="Open Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- =======================================================================
+         SHARED LEFT VERTICAL NAVIGATION (Converse, Archives, Vision, Relics, Seal)
+         ======================================================================= -->
+    <nav class="vertical-nav" id="vertical-nav" aria-label="Awakened Grimoire Navigation">
+      <!-- Axis Ornament Pin (matching reference 2) -->
+      <div class="vnav-axis-ornament" aria-hidden="true">
+        <svg width="24" height="42" viewBox="0 0 24 42" fill="none">
+          <line x1="12" y1="0" x2="12" y2="42" stroke="#ff3b1e" stroke-width="1.2" stroke-opacity="0.8"/>
+          <line x1="7" y1="18" x2="17" y2="18" stroke="#ff3b1e" stroke-width="1.2" stroke-opacity="0.9"/>
+          <polygon points="12,12 15,18 12,24 9,18" fill="#ff3b1e" stroke="none"/>
+          <circle cx="12" cy="34" r="1.5" fill="#ff3b1e"/>
+        </svg>
+      </div>
+
+      <!-- 1. CONVERSE (active, bright crimson treatment) -->
+      <button type="button" class="vnav-item active" data-nav="converse" id="nav-converse">
+        <div class="vnav-icon-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            <circle cx="8.5" cy="12" r="1" fill="currentColor"></circle>
+            <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
+            <circle cx="15.5" cy="12" r="1" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <span class="vnav-label">CONVERSE</span>
+      </button>
+
+      <!-- 2. ARCHIVES -->
+      <button type="button" class="vnav-item" data-nav="archives" id="nav-archives">
+        <div class="vnav-icon-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <span class="vnav-label">ARCHIVES</span>
+      </button>
+
+      <!-- 3. SEAL -->
+      <button type="button" class="vnav-item" data-nav="seal" id="nav-seal">
+        <div class="vnav-icon-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="12" cy="12" r="9"></circle>
+            <circle cx="12" cy="12" r="5.5"></circle>
+            <line x1="12" y1="2" x2="12" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="5" y1="5" x2="19" y2="19"></line>
+            <line x1="5" y1="19" x2="19" y2="5"></line>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <span class="vnav-label">SEAL</span>
+      </button>
+    </nav>
+
+
+    <!-- =======================================================================
+         SCREEN 1: DORMANT STATE (dormant state_Necronomicon(2).png)
+         ======================================================================= -->
+    <section class="screen active" id="screen-dormant">
+      <div class="dormant-bg"></div>
+      
+      <div class="dormant-ui">
+        <!-- Top Nav specific to Dormant -->
+        <header class="shared-top-nav" style="padding: 0;">
+          <a href="#" class="brand-wrapper">
+            <svg class="occult-emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+              <circle cx="50" cy="50" r="46" stroke-width="1.8" />
+              <circle cx="50" cy="50" r="40" stroke-dasharray="2 4" stroke-width="1.2" />
+              <polygon points="50,14 86,50 50,86 14,50" stroke-width="1" />
+              <circle cx="50" cy="50" r="4" fill="currentColor" />
+            </svg>
+            <span class="brand-title">NECRONOMICON</span>
+          </a>
+
+          <nav>
+            <ul class="top-nav-links">
+              <li><button type="button" class="top-nav-link" id="dormant-nav-archive">ARCHIVE</button></li>
+              <li><button type="button" class="top-nav-link" id="dormant-nav-about">ABOUT</button></li>
+              <li><a href="mailto:contact@necronomicon.ritual" class="top-nav-link">CONTACT</a></li>
+              <li>
+                <div class="icon-btn" style="width: 32px; height: 32px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="12 2 15 9 22 12 15 15 12 22 9 15 2 12 9 9 12 2"></polygon>
+                  </svg>
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </header>
+
+        <!-- Left Intro Copy -->
+        <div class="dormant-intro">
+          <div class="dormant-pretitle">SOME THINGS</div>
+          <h1 class="dormant-title">SHOULD STAY LOST</h1>
+          <div class="dormant-crimson-rule"></div>
+          <p class="dormant-subtitle">KNOWLEDGE LIES HERE.<br>WILL YOU OPEN IT?</p>
+        </div>
+
+        <!-- Center Lower Action Area: Open The Book -->
+        <div class="dormant-action-area">
+          <!-- Occult Ritual Diagram partially obscured behind button -->
+          <svg class="dormant-ritual-circle-ornament" viewBox="0 0 250 250" fill="none" aria-hidden="true">
+            <defs>
+              <filter id="ritualGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Outer and concentric rings -->
+            <circle cx="125" cy="125" r="112" class="rc-line rc-outer" filter="url(#ritualGlow)"/>
+            <circle cx="125" cy="125" r="95" class="rc-line rc-middle" filter="url(#ritualGlow)"/>
+            <circle cx="125" cy="125" r="64" class="rc-line rc-inner" filter="url(#ritualGlow)"/>
+            <circle cx="125" cy="125" r="38" class="rc-line rc-core"/>
+            <circle cx="125" cy="125" r="13" class="rc-line rc-dot"/>
+            <circle cx="125" cy="125" r="2.5" class="rc-fill rc-center-dot"/>
+
+            <!-- Fine radial axes -->
+            <line x1="125" y1="11" x2="125" y2="239" class="rc-line" opacity="0.65"/>
+            <line x1="13" y1="125" x2="237" y2="125" class="rc-line" opacity="0.4" stroke-dasharray="2 4"/>
+
+            <!-- Top solar/horned glyph at r=64 -->
+            <circle cx="125" cy="61" r="6" class="rc-line" opacity="0.9"/>
+            <circle cx="125" cy="61" r="1.5" class="rc-fill"/>
+            <path d="M 119 58 Q 125 53 131 58" class="rc-line" opacity="0.85"/>
+            <line x1="125" y1="47" x2="125" y2="55" class="rc-line" opacity="0.85"/>
+
+            <!-- Radial tick marks along outer ring -->
+            <g class="rc-ticks" opacity="0.45">
+              <line x1="125" y1="13" x2="125" y2="16" class="rc-line"/>
+              <line x1="125" y1="234" x2="125" y2="237" class="rc-line"/>
+              <line x1="13" y1="125" x2="16" y2="125" class="rc-line"/>
+              <line x1="234" y1="125" x2="237" y2="125" class="rc-line"/>
+              <line x1="46" y1="46" x2="48" y2="48" class="rc-line"/>
+              <line x1="204" y1="46" x2="202" y2="48" class="rc-line"/>
+              <line x1="46" y1="204" x2="48" y2="202" class="rc-line"/>
+              <line x1="204" y1="204" x2="202" y2="202" class="rc-line"/>
+            </g>
+
+            <!-- 16 Ancient Runes & Planetary Glyphs around the ring (r=103.5) -->
+            <g class="rc-glyphs">
+              <!-- 0 deg / Top -->
+              <g transform="rotate(0 125 125) translate(125 21)">
+                <line x1="0" y1="0" x2="0" y2="6" class="rc-line"/>
+                <circle cx="0" cy="3" r="1.2" class="rc-fill"/>
+              </g>
+              <!-- 22.5 deg -->
+              <g transform="rotate(22.5 125 125) translate(125 21)">
+                <path d="M-2.5 1 L0 5 L2.5 1 M0 1 L0 7" class="rc-line"/>
+              </g>
+              <!-- 45 deg: Mercury ☿ -->
+              <g transform="rotate(45 125 125) translate(125 21)">
+                <circle cx="0" cy="3" r="2" class="rc-line"/>
+                <line x1="0" y1="5" x2="0" y2="8" class="rc-line"/>
+                <line x1="-2" y1="7" x2="2" y2="7" class="rc-line"/>
+                <path d="M-2.5 1 Q0 3 2.5 1" class="rc-line"/>
+              </g>
+              <!-- 67.5 deg -->
+              <g transform="rotate(67.5 125 125) translate(125 21)">
+                <circle cx="0" cy="4" r="1.8" class="rc-fill"/>
+              </g>
+              <!-- 90 deg: Diamond mark -->
+              <g transform="rotate(90 125 125) translate(125 21)">
+                <polygon points="0,1 2.5,4 0,7 -2.5,4" class="rc-line"/>
+              </g>
+              <!-- 112.5 deg -->
+              <g transform="rotate(112.5 125 125) translate(125 21)">
+                <path d="M-2 2 L2 6 M-2 6 L2 2" class="rc-line"/>
+              </g>
+              <!-- 135 deg: Mars ♂ -->
+              <g transform="rotate(135 125 125) translate(125 21)">
+                <circle cx="-1" cy="5" r="2.2" class="rc-line"/>
+                <line x1="0.5" y1="3.5" x2="3" y2="1" class="rc-line"/>
+                <polyline points="1.5,1 3,1 3,2.5" class="rc-line"/>
+              </g>
+              <!-- 157.5 deg -->
+              <g transform="rotate(157.5 125 125) translate(125 21)">
+                <path d="M-2 1 L0 7 L2 3" class="rc-line"/>
+              </g>
+              <!-- 180 deg / Bottom: Alchemy droplet/cross -->
+              <g transform="rotate(180 125 125) translate(125 21)">
+                <circle cx="0" cy="3" r="2.5" class="rc-line"/>
+                <line x1="0" y1="5.5" x2="0" y2="9" class="rc-line"/>
+              </g>
+              <!-- 202.5 deg -->
+              <g transform="rotate(202.5 125 125) translate(125 21)">
+                <path d="M-2 7 L0 1 L2 7 M-1.5 5 L1.5 5" class="rc-line"/>
+              </g>
+              <!-- 225 deg: Jupiter ♃ -->
+              <g transform="rotate(225 125 125) translate(125 21)">
+                <path d="M-3 2 Q-1 1 0 3 L0 8 M-2 5 L2 5" class="rc-line"/>
+              </g>
+              <!-- 247.5 deg -->
+              <g transform="rotate(247.5 125 125) translate(125 21)">
+                <circle cx="0" cy="4" r="1.8" class="rc-fill"/>
+              </g>
+              <!-- 270 deg: Diamond mark -->
+              <g transform="rotate(270 125 125) translate(125 21)">
+                <polygon points="0,1 2.5,4 0,7 -2.5,4" class="rc-line"/>
+              </g>
+              <!-- 292.5 deg -->
+              <g transform="rotate(292.5 125 125) translate(125 21)">
+                <path d="M-2 2 L2 2 L-1 7" class="rc-line"/>
+              </g>
+              <!-- 315 deg: Venus ♀ -->
+              <g transform="rotate(315 125 125) translate(125 21)">
+                <circle cx="0" cy="3" r="2.2" class="rc-line"/>
+                <line x1="0" y1="5.2" x2="0" y2="8.5" class="rc-line"/>
+                <line x1="-2" y1="7" x2="2" y2="7" class="rc-line"/>
+              </g>
+              <!-- 337.5 deg -->
+              <g transform="rotate(337.5 125 125) translate(125 21)">
+                <path d="M0 1 L0 7 M0 2 L2.5 4 L0 5" class="rc-line"/>
+              </g>
+            </g>
+
+            <!-- Downward chevron below the circle -->
+            <polyline points="117,246 125,254 133,246" class="rc-chevron"/>
+          </svg>
+
+          <!-- Ornate "OPEN THE BOOK" Button Component -->
+          <button type="button" class="btn-open-book" id="btn-open-book" aria-label="Open The Book">
+            <!-- Precise Antique Engraved Frame SVG -->
+            <svg class="btn-frame-svg" viewBox="0 0 412 64" fill="none" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="btnBurgundyFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#180305" stop-opacity="0.88"/>
+                  <stop offset="50%" stop-color="#2a0508" stop-opacity="0.80"/>
+                  <stop offset="100%" stop-color="#130204" stop-opacity="0.92"/>
+                </linearGradient>
+                <linearGradient id="btnBorderGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#a02014" stop-opacity="0.45"/>
+                  <stop offset="30%" stop-color="#df381c" stop-opacity="0.85"/>
+                  <stop offset="50%" stop-color="#ff542e" stop-opacity="1.0"/>
+                  <stop offset="70%" stop-color="#df381c" stop-opacity="0.85"/>
+                  <stop offset="100%" stop-color="#a02014" stop-opacity="0.45"/>
+                </linearGradient>
+                <filter id="btnGlowFilter" x="-10%" y="-10%" width="120%" height="120%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Translucent Dark Burgundy Body -->
+              <path class="btn-path-bg"
+                    d="M 28,2 L 384,2 L 388,5 L 394,5 L 394,22 L 390,26 L 395,27 L 393,29 L 410,32 L 393,35 L 395,37 L 390,38 L 394,42 L 394,59 L 388,59 L 384,62 L 28,62 L 24,59 L 18,59 L 18,42 L 22,38 L 17,37 L 19,35 L 2,32 L 19,29 L 17,27 L 22,26 L 18,22 L 18,5 L 24,5 Z"
+                    fill="url(#btnBurgundyFill)"/>
+
+              <!-- Outer Glowing Antique Crimson Border with Ornamental Side Extensions -->
+              <path class="btn-path-outer"
+                    d="M 28,2 L 384,2 L 388,5 L 394,5 L 394,22 L 390,26 L 395,27 L 393,29 L 410,32 L 393,35 L 395,37 L 390,38 L 394,42 L 394,59 L 388,59 L 384,62 L 28,62 L 24,59 L 18,59 L 18,42 L 22,38 L 17,37 L 19,35 L 2,32 L 19,29 L 17,27 L 22,26 L 18,22 L 18,5 L 24,5 Z"
+                    stroke="url(#btnBorderGlow)" stroke-width="1.1" filter="url(#btnGlowFilter)"/>
+
+              <!-- Inner Delicate Engraved Hairline -->
+              <path class="btn-path-inner"
+                    d="M 30,5 L 382,5 L 386,7.5 L 391,7.5 L 391,22.5 L 387.5,25.5 L 391.5,27 L 390.5,29 L 403,32 L 390.5,35 L 391.5,37 L 387.5,38.5 L 391,41.5 L 391,56.5 L 386,56.5 L 382,59 L 30,59 L 26,56.5 L 21,56.5 L 21,41.5 L 24.5,38.5 L 20.5,37 L 21.5,35 L 9,32 L 21.5,29 L 20.5,27 L 24.5,25.5 L 21,22.5 L 21,7.5 L 26,7.5 Z"
+                    stroke="rgba(235, 80, 50, 0.4)" stroke-width="0.7" fill="none"/>
+            </svg>
+
+            <!-- Centered Warm Ivory Typography -->
+            <span class="btn-open-book-text">OPEN THE BOOK</span>
+          </button>
+        </div>
+
+        <!-- Footers -->
+        <div class="dormant-footer-left">
+          <span>V. 0.1</span>
+          <div class="dormant-arrow-rule"></div>
+        </div>
+
+        <div class="dormant-footer-right">
+          <svg width="22" height="22" viewBox="0 0 100 100" fill="none" stroke="var(--gold-dim)" stroke-width="2">
+            <circle cx="50" cy="50" r="40" />
+            <circle cx="50" cy="50" r="20" stroke-dasharray="4 4" />
+            <line x1="50" y1="10" x2="50" y2="90" />
+            <line x1="10" y1="50" x2="90" y2="50" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =======================================================================
+         SCREEN 2: AWAKENING RITUAL (Pixel-faithful recreation)
+         ======================================================================= -->
+    <section class="screen" id="screen-awakening">
+      <div class="awakening-bg" id="awakening-bg"></div>
+      
+      <!-- Persistent Awakening Ritual Video Layer (Frame-accurate segment playback) -->
+      <video id="awakening-ritual-video" 
+             class="awakening-ritual-video" 
+             src="assets/main ui/awakning ritual/Ritual_circle_glowing_in_darkness_20261020112251.mp4"
+             playsinline 
+             muted 
+             preload="auto">
+        <source src="assets/main ui/awakning ritual/Ritual_circle_glowing_in_darkness_20261020112251.mp4" type="video/mp4">
+      </video>
+      
+      <!-- Four Candle Flame Glows positioned over exact candle coordinates -->
+      <div class="candle-glow-container" aria-hidden="true">
+        <div class="candle-flame candle-1"></div>
+        <div class="candle-flame candle-2"></div>
+        <div class="candle-flame candle-3"></div>
+        <div class="candle-flame candle-4"></div>
+      </div>
+
+      <!-- Necronomicon Book Head Interactive Hotspot (Awakening Only) -->
+      <button type="button" 
+              id="awakening-book-head" 
+              class="awakening-book-head-hotspot" 
+              aria-label="Open Dead Alphabet Decoder" 
+              title="Inspect Ancient Script (Necronomicon Cipher)"></button>
+
+      <!-- Top Navigation Header -->
+      <header class="awakening-top-nav">
+        <div class="awakening-brand">
+          <svg class="awakening-emblem" viewBox="0 0 32 32" fill="none" stroke="currentColor">
+            <circle cx="16" cy="16" r="13" stroke-width="1.2" />
+            <circle cx="16" cy="16" r="8" stroke-width="0.8" />
+            <circle cx="16" cy="16" r="2.5" stroke-width="1.2" />
+            <line x1="16" y1="1" x2="16" y2="31" stroke-width="1" />
+            <line x1="1" y1="16" x2="31" y2="16" stroke-width="1" />
+            <line x1="6" y1="16" x2="10" y2="16" stroke-width="1.2" />
+            <line x1="22" y1="16" x2="26" y2="16" stroke-width="1.2" />
+            <line x1="16" y1="6" x2="16" y2="10" stroke-width="1.2" />
+            <line x1="16" y1="22" x2="16" y2="26" stroke-width="1.2" />
+          </svg>
+          <span class="awakening-brand-text">NECRONOMICON</span>
+        </div>
+
+        <nav class="awakening-nav-links">
+          <a href="#archive" class="awakening-nav-link" id="awakening-link-archive">ARCHIVE</a>
+          <a href="#about" class="awakening-nav-link" id="awakening-link-about">ABOUT</a>
+          <a href="#contact" class="awakening-nav-link" id="awakening-link-contact">CONTACT</a>
+          <div class="awakening-top-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor">
+              <circle cx="16" cy="16" r="13" stroke-width="1.2" />
+              <circle cx="16" cy="16" r="10.5" stroke-width="0.8" stroke-dasharray="1.5 2.5" />
+              <!-- 8-point compass star -->
+              <polygon points="16,5 18,14 27,16 18,18 16,27 14,18 5,16 14,14" fill="currentColor" opacity="0.85" />
+              <circle cx="16" cy="16" r="2.5" fill="#040101" />
+            </svg>
+          </div>
+        </nav>
+      </header>
+
+      <div class="awakening-ui">
+        <!-- Left Title & Instruction Column -->
+        <div class="awakening-left-panel">
+          <!-- Occult Axis Line -->
+          <div class="awakening-axis" aria-hidden="true">
+            <svg class="axis-svg" viewBox="0 0 24 380" fill="none" stroke="currentColor">
+              <!-- Top circular emblem with crosshair -->
+              <circle cx="12" cy="12" r="10" stroke-width="1.2" />
+              <circle cx="12" cy="12" r="6" stroke-width="0.8" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <line x1="12" y1="0" x2="12" y2="24" stroke-width="1" />
+              <line x1="0" y1="12" x2="24" y2="12" stroke-width="1" />
+              
+              <!-- Connecting vertical line -->
+              <line x1="12" y1="24" x2="12" y2="65" stroke-width="0.8" />
+              
+              <!-- Sigil symbol -->
+              <circle cx="12" cy="74" r="4" stroke-width="0.9" />
+              <line x1="12" y1="78" x2="12" y2="98" stroke-width="0.8" />
+              
+              <!-- Diamond ornament -->
+              <polygon points="12,110 18,120 12,130 6,120" stroke-width="0.9" fill="none" />
+              
+              <!-- Vertical staff with ancient glyph ticks -->
+              <line x1="12" y1="130" x2="12" y2="380" stroke-width="0.8" stroke-dasharray="6 3 2 3" />
+              <line x1="8" y1="155" x2="16" y2="155" stroke-width="0.8" />
+              <line x1="9" y1="185" x2="15" y2="185" stroke-width="0.8" />
+              <line x1="7" y1="220" x2="17" y2="220" stroke-width="0.8" />
+              <line x1="9" y1="260" x2="15" y2="260" stroke-width="0.8" />
+              <line x1="8" y1="300" x2="16" y2="300" stroke-width="0.8" />
+              <line x1="10" y1="340" x2="14" y2="340" stroke-width="0.8" />
+            </svg>
+          </div>
+
+          <div class="awakening-title-block">
+            <h2 class="awakening-heading">AWAKENING<br>RITUAL</h2>
+            
+            <div class="awakening-accent-wrap">
+              <div class="awakening-crimson-line"></div>
+              <div class="awakening-divider-ornament">
+                <span class="ornament-line"></span>
+                <span class="ornament-diamond">◇</span>
+                <span class="ornament-line"></span>
+              </div>
+            </div>
+
+            <div class="awakening-steps-copy">
+              <span class="awakening-step-text">SPEAK THE WORDS</span>
+              <span class="awakening-step-text">FOLLOW THE SYMBOLS</span>
+              <span class="awakening-step-text">OPEN THE KNOWLEDGE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 4-Phase Progression Column -->
+        <div class="awakening-right-panel" role="region" aria-label="Ritual Progress">
+          <!-- Phase I: Invocation (25%) -->
+          <div class="ritual-phase-row active" data-phase="0" id="phase-row-0">
+            <div class="phase-header-line">
+              <div class="phase-node-wrap">
+                <div class="phase-node" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.2" />
+                    <circle cx="12" cy="12" r="5" stroke-width="0.9" />
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                    <line x1="12" y1="2" x2="12" y2="22" stroke-width="0.9" />
+                    <line x1="2" y1="12" x2="22" y2="12" stroke-width="0.9" />
+                  </svg>
+                </div>
+                <span class="phase-title-text">I. INVOCATION</span>
+              </div>
+              <span class="phase-pct">25%</span>
+            </div>
+            <div class="phase-divider"></div>
+          </div>
+
+          <!-- Phase II: Recognition (50%) -->
+          <div class="ritual-phase-row" data-phase="1" id="phase-row-1">
+            <div class="phase-header-line">
+              <div class="phase-node-wrap">
+                <div class="phase-node" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.2" />
+                    <line x1="12" y1="2" x2="12" y2="22" stroke-width="1.0" />
+                    <line x1="9" y1="8" x2="15" y2="8" stroke-width="0.8" />
+                    <line x1="8" y1="12" x2="16" y2="12" stroke-width="0.8" />
+                    <line x1="9" y1="16" x2="15" y2="16" stroke-width="0.8" />
+                  </svg>
+                </div>
+                <span class="phase-title-text">II. RECOGNITION</span>
+              </div>
+              <span class="phase-pct">50%</span>
+            </div>
+            <div class="phase-divider"></div>
+          </div>
+
+          <!-- Phase III: Binding (75%) -->
+          <div class="ritual-phase-row" data-phase="2" id="phase-row-2">
+            <div class="phase-header-line">
+              <div class="phase-node-wrap">
+                <div class="phase-node" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.2" />
+                    <line x1="12" y1="4" x2="12" y2="20" stroke-width="1.0" />
+                    <line x1="4" y1="12" x2="20" y2="12" stroke-width="1.0" />
+                    <polyline points="10 6 12 4 14 6" stroke-width="0.9" />
+                    <polyline points="10 18 12 20 14 18" stroke-width="0.9" />
+                  </svg>
+                </div>
+                <span class="phase-title-text">III. BINDING</span>
+              </div>
+              <span class="phase-pct">75%</span>
+            </div>
+            <div class="phase-divider"></div>
+          </div>
+
+          <!-- Phase IV: Awakening (100%) -->
+          <div class="ritual-phase-row" data-phase="3" id="phase-row-3">
+            <div class="phase-header-line">
+              <div class="phase-node-wrap">
+                <div class="phase-node" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.2" />
+                    <line x1="12" y1="3" x2="12" y2="21" stroke-width="1.0" />
+                    <circle cx="12" cy="9" r="2.5" stroke-width="0.8" />
+                    <line x1="8" y1="15" x2="16" y2="15" stroke-width="0.8" />
+                    <line x1="10" y1="18" x2="14" y2="18" stroke-width="0.8" />
+                  </svg>
+                </div>
+                <span class="phase-title-text">IV. AWAKENING</span>
+              </div>
+              <span class="phase-pct">100%</span>
+            </div>
+            <div class="phase-divider"></div>
+          </div>
+        </div>
+
+        <!-- Bottom Center Incantation Entry Bar -->
+        <div class="awakening-bottom-bar">
+          <div class="incantation-instruction" id="awakening-instruction">RECITE THE FIRST INCANTATION</div>
+
+          <!-- Dead Alphabet Incantation Symbols (Decipherable occult script) -->
+          <div class="dead-alphabet-spell-display" id="awakening-symbol-display" aria-label="Incantation Glyphs"></div>
+          
+          <form class="incantation-form" id="awakening-form" onsubmit="return false">
+            <div class="incantation-field-wrap">
+              <input type="text" 
+                     class="incantation-input" 
+                     id="awakening-input" 
+                     placeholder="Type deciphered incantation…" 
+                     autocomplete="off" 
+                     spellcheck="false"
+                     aria-label="Recite incantation">
+            </div>
+
+            <button type="submit" class="incantation-submit-btn" id="awakening-submit-btn" aria-label="Submit Incantation">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="12" x2="19" y2="12"></line>
+                <polyline points="13 6 19 12 13 18"></polyline>
+              </svg>
+            </button>
+          </form>
+
+          <!-- Occult Diamond Divider beneath input -->
+          <div class="awakening-bottom-ornament" aria-hidden="true">
+            <span class="bottom-ornament-line"></span>
+            <span class="bottom-ornament-diamond">◇</span>
+            <span class="bottom-ornament-line"></span>
+          </div>
+
+          <!-- Prompt Chips (Accessible fallback) -->
+          <div class="incantation-chips" id="awakening-chips"></div>
+          
+          <!-- Validation Feedback -->
+          <div class="ritual-feedback" id="awakening-feedback" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Dead Alphabet Decoder Overlay (Awakening Only — Opened by clicking Book's Head) -->
+      <div class="awakening-decoder-modal" id="awakening-decoder-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Dead Alphabet Decoder">
+        <div class="decoder-modal-backdrop" id="decoder-backdrop"></div>
+        <div class="decoder-modal-card">
+          <div class="decoder-modal-header">
+            <div class="decoder-brand-wrap">
+              <span class="decoder-modal-sub">NECRONOMICON SCRIPT · CIPHER KEY</span>
+              <h3 class="decoder-modal-title">DEAD ALPHABET</h3>
+            </div>
+            <button type="button" class="decoder-close-btn" id="decoder-close-btn" aria-label="Close Decoder">&times;</button>
+          </div>
+          
+          <div class="decoder-grid" id="decoder-grid"></div>
+          
+          <div class="decoder-modal-footer">
+            <span class="decoder-footer-hint">Click the tome's face again or press ESC / close button to return to the ritual.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =======================================================================
+         SCREEN 3: AWAKENED / CONVERSE (Exact Interactive Necronomicon Model)
+         ======================================================================= -->
+    <section class="screen" id="screen-awakened">
+      <canvas id="gl" aria-hidden="true"></canvas>
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div id="voice" role="status" aria-live="polite"></div>
+      
+      <!-- Critical Instability Warning & REBIND Button (Appears when uncontrolled) -->
+      <div id="rebind-alert-banner" class="rebind-alert-banner hidden">
+        <span class="rebind-banner-pulse-dot"></span>
+        <span class="rebind-alert-msg">INSTABILITY CRITICAL — ENTITY UNCONTROLLED</span>
+        <button type="button" id="btn-trigger-rebind" class="btn-rebind-action">
+          REBIND
+        </button>
+      </div>
+
+      <div id="rit"></div>
+      <form class="bar" id="f" onsubmit="return false">
+        <button type="button" id="mic" aria-label="Speak">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+        </button>
+        <div class="field">
+          <input id="in" type="text" placeholder="Speak or type…" autocomplete="off" aria-label="Message">
+          <button type="submit" id="send" aria-label="Send">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M3 12 21 4l-5 16-4-6.5L3 12Zm9 1.5L21 4"/></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+
+
+
+
+    <!-- =======================================================================
+         SCREEN 6: REBINDING RITUAL (Reference: rebind_bg.jpg)
+         ======================================================================= -->
+    <section class="screen" id="screen-rebind">
+      <canvas id="rebind-anim-canvas" class="rebind-anim-canvas" width="1920" height="1080"></canvas>
+      <div class="rebind-bg" id="rebind-bg"></div>
+      <canvas id="rebind-canvas" class="rebind-canvas" aria-hidden="true"></canvas>
+
+      <div class="rebind-ui-overlay">
+        <!-- Occult Top Headers -->
+        <header class="rebind-header-bar">
+          <div class="rebind-brand-emblem">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="12,2 15,9 22,12 15,15 12,22 9,15 2,12 9,9"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <div class="rebind-brand-text">
+              <span class="rebind-brand-title">NECRONOMICON</span>
+              <span class="rebind-brand-status">REBINDING</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dedicated Center Subtitles / Entity Voice -->
+        <div id="rebind-voice" class="rebind-voice-text" role="status" aria-live="polite"></div>
+
+        <!-- Symmetrical Bottom Incantation Area matching reference -->
+        <div class="rebind-bottom-container">
+          <div class="rebind-header-block">
+            <span class="rebind-incantation-title">RECITE THE INCANTATION</span>
+            <div class="rebind-diamond-ornament">◇</div>
+          </div>
+
+          <!-- Dead Alphabet Incantation Symbols (Decipherable occult script) -->
+          <div class="dead-alphabet-spell-display" id="rebind-symbol-display" aria-label="Incantation Glyphs"></div>
+
+          <form class="rebind-input-form" id="rebind-form" onsubmit="return false">
+            <div class="rebind-field-shell">
+              <button type="button" id="rebind-mic" class="rebind-mic-btn" aria-label="Voice Incantation">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+              </button>
+              <input type="text" id="rebind-input" class="rebind-input-text" placeholder="Type deciphered incantation…" autocomplete="off" spellcheck="false" aria-label="Incantation">
+            </div>
+            <button type="submit" id="rebind-submit-btn" class="rebind-arrow-btn" aria-label="Cast Rebinding">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </form>
+
+          <div class="rebind-diamond-ornament rebind-bottom-diamond">◇</div>
+          <div id="rebind-feedback" class="rebind-feedback-text" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =======================================================================
+         SCREEN 7: SEALING RITUAL (sl 1.png)
+         ======================================================================= -->
+    <section class="screen" id="screen-sealing">
+      <canvas id="sealing-anim-canvas" class="sealing-anim-canvas" width="1920" height="1080"></canvas>
+      <div class="sealing-bg"></div>
+
+      <div class="sealing-ui">
+        <div>
+          <h2 class="sealing-header-title">SEALING RITUAL</h2>
+          <p class="sealing-header-sub">THE FINAL CONFINEMENT OF EX-MORTIS</p>
+        </div>
+
+        <!-- Sealing Steps Row -->
+        <div class="sealing-steps-row">
+          <div class="sealing-step-node active" data-step="0">I</div>
+          <div class="sealing-step-node" data-step="1">II</div>
+          <div class="sealing-step-node" data-step="2">III</div>
+          <div class="sealing-step-node" data-step="3">IV</div>
+        </div>
+
+        <!-- Epilogue Card -->
+        <div class="epilogue-card" id="epilogue-card">
+          <h3 class="epilogue-title">THE CONFLICT CONCLUDED</h3>
+          <div class="epilogue-status-line status-castout">✦ MANIFESTATION: CAST OUT INTO ABYSS</div>
+          <div class="epilogue-status-line status-remains">✦ KANDARIAN FORCE: REMAINS, BUT NOT HERE</div>
+          <p class="epilogue-body-text">
+            “The manifestation is cast out. The book is sealed.<br>
+            The Kandarian force remains, but not here.”
+          </p>
+          <div class="brand-subtitle" style="text-align: center;">RETURNING TO DORMANT SLEEP...</div>
+        </div>
+
+        <!-- Bottom Sealing Form -->
+        <div class="rebind-bottom-bar">
+          <div class="incantation-instruction">RECITE THE SEALING INCANTATION</div>
+
+          <!-- Dead Alphabet Incantation Symbols (Decipherable occult script) -->
+          <div class="dead-alphabet-spell-display" id="sealing-symbol-display" aria-label="Incantation Glyphs"></div>
+
+          <form class="incantation-form" id="sealing-form" onsubmit="return false">
+            <div class="incantation-field-wrap">
+              <input type="text" class="incantation-input" id="sealing-input" placeholder="Type deciphered incantation…" autocomplete="off" spellcheck="false" aria-label="Recite incantation">
+            </div>
+            <button type="submit" class="incantation-submit-btn" id="sealing-submit-btn" aria-label="Lock Seal">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </button>
+          </form>
+          <div id="sealing-feedback" class="rebind-feedback-text" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =======================================================================
+         MODAL 1: ARCHIVES (CODEX OF RAYMOND KNOWBY & CLUES)
+         ======================================================================= -->
+    <div class="occult-modal" id="modal-archives">
+      <div class="occult-modal-card">
+        <button type="button" class="modal-close-btn" aria-label="Close Archives">&times;</button>
+        
+        <h2 class="brand-title" style="font-size: 18px; color: var(--gold-antique);">ARCHIVES OF THE EX-MORTIS</h2>
+        <span class="brand-subtitle">TRANSLATIONS OF PROFESSOR RAYMOND KNOWBY</span>
+
+        <div class="codex-layout">
+          <div class="codex-tabs">
+            <button type="button" class="codex-tab-btn active" data-entry="threat">1. The Threat</button>
+            <button type="button" class="codex-tab-btn" data-entry="anchor">2. Clue I: The Anchor</button>
+            <button type="button" class="codex-tab-btn" data-entry="binding">3. Clue II: The Binding</button>
+            <button type="button" class="codex-tab-btn" data-entry="casting">4. Clue III: The Expulsion</button>
+            <button type="button" class="codex-tab-btn" data-entry="history">5. Origins & Cabin</button>
+          </div>
+
+          <div class="codex-content-pane">
+            <div class="codex-entry-pane" id="codex-threat">
+              <h4 class="codex-entry-title">The Kandarian Demon & Deadites</h4>
+              <div class="codex-entry-meta">Transcribed: Elk Grove Woods Cabin, 1981</div>
+              <p class="codex-entry-body">
+                "It is an ancient, incorporeal spirit that wanders the dark forests of Kandar. When awakened by the recitation of these passages, it possesses the living and the dead, twisting their flesh into demonic mockeries called Deadites. It cannot be pierced by ordinary lead or steel. To overcome a manifestation, one must understand how it anchors into our realm..."
+              </p>
+            </div>
+
+            <div class="codex-entry-pane" id="codex-anchor" style="display: none;">
+              <h4 class="codex-entry-title">Clue I: The Pin / Anchor</h4>
+              <div class="codex-entry-meta">Portal Counter-Ritual Step 1</div>
+              <p class="codex-entry-body">
+                "A door between worlds will not hold on its own. It must be pinned to something the visitor cannot stop returning to in this room. Every manifestation has such a pin. Use the relic <strong>Dead Sight</strong> to reveal the hidden marker."
+              </p>
+              <div class="clue-callout-box">
+                ✦ Status: Anchor marker visible upon triggering Dead Sight after the supernatural Vision anomaly.
+              </div>
+            </div>
+
+            <div class="codex-entry-pane" id="codex-binding" style="display: none;">
+              <h4 class="codex-entry-title">Clue II: The Binding Word</h4>
+              <div class="codex-entry-meta">Portal Counter-Ritual Step 2</div>
+              <p class="codex-entry-body">
+                "The old rites speak of a Binding Word. Not a spell to destroy, but a clasp. It holds a breach open and holds the thing inside it weak. A held breach is a doorway. An unheld one is a wound."
+              </p>
+              <div class="clue-callout-box">
+                ✦ Status: Requires anchor found. Clasp stabilizes the passage and weakens the entity.
+              </div>
+            </div>
+
+            <div class="codex-entry-pane" id="codex-casting" style="display: none;">
+              <h4 class="codex-entry-title">Clue III: The Casting-Out</h4>
+              <div class="codex-entry-meta">Portal Counter-Ritual Step 3</div>
+              <p class="codex-entry-body">
+                "A weakened manifestation cannot be killed. It can be cast out. Weak, pinned and held, it can be driven back through the very door it used to enter. Once expelled, the breach closes behind it and the book may be safely sealed!"
+              </p>
+              <div class="clue-callout-box">
+                ✦ Victory condition: Cast out the demon manifestation to unlock the Sealing Rite.
+              </div>
+            </div>
+
+            <div class="codex-entry-pane" id="codex-history" style="display: none;">
+              <h4 class="codex-entry-title">Bound in Human Flesh, Inked in Blood</h4>
+              <div class="codex-entry-meta">Historical Codex Notes</div>
+              <p class="codex-entry-body">
+                "Roughly translated: The Book of the Dead. Bound in human flesh and inked in blood. It served as a passageway to the evil worlds beyond. Now confined inside this machine, its power seeks an exit through human curiosity."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- =======================================================================
+         MODAL 3: SETTINGS
+         ======================================================================= -->
+    <div class="occult-modal" id="modal-settings">
+      <div class="occult-modal-card" style="max-width: 500px;">
+        <button type="button" class="modal-close-btn" aria-label="Close Settings">&times;</button>
+        <h2 class="brand-title" style="font-size: 16px; color: var(--gold-antique); margin-bottom: 24px;">SANCTUM CONFIGURATION</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div>
+            <label style="display: block; font-family: var(--font-serif-title); font-size: 11px; letter-spacing: 0.25em; margin-bottom: 8px;">MASTER AUDIO SYNTHESIZER</label>
+            <p style="font-size: 14px; color: var(--bone-dim);">Web Audio procedural drone, ritual bells, sub-rumble, and voice synthesizer are active.</p>
+          </div>
+
+          <div>
+            <label style="display: block; font-family: var(--font-serif-title); font-size: 11px; letter-spacing: 0.25em; margin-bottom: 8px;">VISION SENSOR SOURCE</label>
+            <p style="font-size: 14px; color: var(--bone-dim);">Webcam stream with automatic fallback to atmospheric ritual chamber demonstration room.</p>
+          </div>
+
+          <div>
+            <label style="display: block; font-family: var(--font-serif-title); font-size: 11px; letter-spacing: 0.25em; margin-bottom: 8px;">SPEECH RECOGNITION</label>
+            <p style="font-size: 14px; color: var(--bone-dim);">Push-to-talk mic button on the Converse bar uses Web Speech API (interim streaming enabled).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =======================================================================
+         MODAL 4: ABOUT / BOO HACKATHON LORE
+         ======================================================================= -->
+    <div class="occult-modal" id="modal-about">
+      <div class="occult-modal-card">
+        <button type="button" class="modal-close-btn" aria-label="Close About">&times;</button>
+        <h2 class="brand-title" style="font-size: 18px; color: var(--gold-antique);">BOO HACKATHON — EVIL DEAD UNIVERSE</h2>
+        <span class="brand-subtitle">THE DIGITAL NECRONOMICON EX-MORTIS</span>
+        
+        <div style="margin-top: 24px; font-family: var(--font-serif-body); font-size: 17px; line-height: 1.6; color: var(--bone-muted);">
+          <p style="margin-bottom: 16px;">
+            <strong>The Threat:</strong> The Kandarian Demon and Deadites from the classic <em>Evil Dead</em> mythos.
+          </p>
+          <p style="margin-bottom: 16px;">
+            <strong>Our Invention:</strong> A digital incarnation of the Necronomicon Ex-Mortis. The computer itself becomes the ancient tome — sentient, manipulative, sarcastic, and dangerous.
+          </p>
+          <p>
+            Through conversation, environmental vision inspection, instability management, and the three supernatural abilities (Dead Sight, Binding Word, and Casting-Out), the user discovers the Kandarian Demon's anchor in their own room, stabilizes the breach, and banishes the manifestation before sealing the book back into stone dormancy.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End #app-viewport -->
+
+  <!-- Application Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

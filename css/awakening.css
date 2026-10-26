@@ -1,0 +1,622 @@
+/* ==========================================================================
+   SCREEN 2: AWAKENING RITUAL — CSS SPECIFICATION
+   Visual Reference: Awakening Ritual Interface.png (1672x941 Source of Truth)
+   ========================================================================== */
+
+#screen-awakening {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #040101;
+}
+
+/* Background Layer showing stone ritual floor with open book, circle & candles */
+.awakening-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../assets/main ui/awakning ritual/0%.png') center center / cover no-repeat;
+  transition: background-image 0.8s ease;
+  z-index: 1;
+}
+
+/* Persistent Awakening Ritual Video Player (Frame-accurate segment playback) */
+.awakening-ritual-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.awakening-ritual-video.active-playback {
+  opacity: 1;
+}
+
+/* Candle Flame Glow Emulators positioned precisely over the four candle wicks */
+.candle-glow-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.candle-flame {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle, 
+    rgba(255, 195, 75, 0.85) 0%, 
+    rgba(255, 105, 25, 0.5) 35%, 
+    rgba(196, 40, 15, 0.18) 55%, 
+    transparent 72%
+  );
+  filter: blur(5px);
+  animation: candleFlicker 3s infinite alternate ease-in-out;
+}
+
+/* Candle coordinates based on 1672x941 source coordinates */
+.candle-1 { left: 26.67%; top: 12.65%; animation-delay: 0s; }
+.candle-2 { left: 73.50%; top: 11.26%; animation-delay: 0.8s; }
+.candle-3 { left: 26.44%; top: 76.94%; animation-delay: 1.5s; }
+.candle-4 { left: 73.21%; top: 76.94%; animation-delay: 0.4s; }
+
+@keyframes candleFlicker {
+  0%   { transform: translate(-50%, -50%) scale(0.92) translate(0, 0); opacity: 0.70; }
+  35%  { transform: translate(-50%, -50%) scale(1.06) translate(-1px, -2px); opacity: 0.95; }
+  70%  { transform: translate(-50%, -50%) scale(0.96) translate(1px, 1px); opacity: 0.78; }
+  100% { transform: translate(-50%, -50%) scale(1.10) translate(0, -1px); opacity: 1.0; }
+}
+
+/* ==========================================================================
+   TOP NAVIGATION
+   ========================================================================== */
+.awakening-top-nav {
+  position: absolute;
+  top: calc(100vh * (42 / 941));
+  left: 0;
+  right: 0;
+  padding: 0 calc(100vw * (52 / 1672));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.awakening-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  cursor: default;
+}
+
+.awakening-emblem {
+  width: 28px;
+  height: 28px;
+  color: #e5cb9f;
+  filter: drop-shadow(0 0 8px rgba(229, 203, 159, 0.6));
+  transition: transform 0.6s ease, color 0.4s ease;
+  stroke-width: 1.3px;
+}
+
+.awakening-brand:hover .awakening-emblem {
+  transform: rotate(45deg);
+  color: #ffffff;
+}
+
+.awakening-brand-text {
+  font-family: var(--font-serif-title);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  color: #ffffff;
+  padding-left: 0.45em;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5), 0 0 24px rgba(203, 178, 141, 0.4);
+  user-select: none;
+}
+
+.awakening-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.awakening-nav-link {
+  font-family: var(--font-serif-title);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  color: #ede3d2;
+  text-decoration: none;
+  padding-left: 0.4em;
+  text-shadow: 0 0 10px rgba(237, 227, 210, 0.4);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  user-select: none;
+}
+
+.awakening-nav-link:hover {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+}
+
+.awakening-top-icon {
+  width: 26px;
+  height: 26px;
+  color: #e5cb9f;
+  margin-left: -4px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 0 8px rgba(229, 203, 159, 0.5));
+  transition: transform 0.5s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+.awakening-top-icon:hover {
+  transform: rotate(90deg);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   UI OVERLAY CONTAINER
+   ========================================================================== */
+.awakening-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   LEFT INSTRUCTIONS PANEL
+   Anchor: Y=355 in 1672x941 layout, X=118
+   ========================================================================== */
+.awakening-left-panel {
+  position: absolute;
+  left: calc(100vw * (116 / 1672));
+  top: calc(100vh * (355 / 941));
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  z-index: 20;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.awakening-axis {
+  width: 20px;
+  height: 330px;
+  color: rgba(203, 178, 141, 0.5);
+  flex-shrink: 0;
+}
+
+.axis-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 3px rgba(203, 178, 141, 0.25));
+}
+
+.awakening-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.awakening-heading {
+  font-family: var(--font-serif-title);
+  font-size: clamp(26px, 2.3vw, 32px);
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  color: #ede3d2;
+  line-height: 1.25;
+  margin-bottom: 22px;
+  padding-left: 0.38em;
+  text-shadow: 0 0 14px rgba(237, 227, 210, 0.3);
+}
+
+.awakening-accent-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.awakening-crimson-line {
+  width: 135px;
+  height: 1.5px;
+  background: linear-gradient(90deg, #c41e12 0%, #ff3318 45%, rgba(196, 30, 18, 0.1) 100%);
+  box-shadow: 0 0 10px rgba(255, 51, 24, 0.7);
+}
+
+.awakening-divider-ornament {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 86px;
+  color: rgba(203, 178, 141, 0.55);
+  font-size: 8px;
+}
+
+.ornament-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(203, 178, 141, 0.35);
+}
+
+.ornament-diamond {
+  line-height: 1;
+  transform: scale(0.9);
+}
+
+.awakening-steps-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.awakening-step-text {
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.36em;
+  color: #ede3d2;
+  opacity: 0.88;
+  line-height: 1.8;
+  text-transform: uppercase;
+  padding-left: 0.36em;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================================
+   RIGHT RITUAL PROGRESSION PANEL
+   Anchor: Y=345 in 1672x941 layout, X=1320
+   ========================================================================== */
+.awakening-right-panel {
+  position: absolute;
+  right: calc(100vw * (52 / 1672));
+  top: calc(100vh * (345 / 941));
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 310px;
+  max-width: 25vw;
+  z-index: 20;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.ritual-phase-row {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+}
+
+.phase-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.phase-node-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.phase-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(203, 178, 141, 0.4);
+  background: rgba(10, 4, 3, 0.7);
+  display: grid;
+  place-items: center;
+  color: rgba(203, 178, 141, 0.6);
+  flex-shrink: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.phase-title-text {
+  font-family: var(--font-serif-title);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(234, 217, 200, 0.72);
+  text-transform: uppercase;
+  padding-left: 0.28em;
+  transition: all 0.4s ease;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}
+
+.phase-pct {
+  font-family: var(--font-serif-title);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: rgba(203, 178, 141, 0.7);
+  transition: all 0.4s ease;
+}
+
+.phase-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(203, 178, 141, 0.24);
+  transition: all 0.4s ease;
+}
+
+/* Hover on phase row */
+.ritual-phase-row:hover .phase-node {
+  border-color: rgba(203, 178, 141, 0.7);
+  color: #e5cb9f;
+}
+
+.ritual-phase-row:hover .phase-title-text {
+  color: #ede3d2;
+}
+
+/* Active Phase State */
+.ritual-phase-row.active .phase-node {
+  border-color: #ff3318;
+  background: rgba(45, 8, 6, 0.9);
+  color: #ff3318;
+  box-shadow: 0 0 20px rgba(255, 51, 24, 0.75), inset 0 0 8px rgba(196, 30, 18, 0.5);
+  transform: scale(1.08);
+}
+
+.ritual-phase-row.active .phase-title-text {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 51, 24, 0.6);
+}
+
+.ritual-phase-row.active .phase-pct {
+  color: #e5cb9f;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(229, 203, 159, 0.5);
+}
+
+.ritual-phase-row.active .phase-divider {
+  height: 1.5px;
+  background: linear-gradient(90deg, #c41e12 0%, #ff3318 45%, rgba(196, 30, 18, 0.15) 100%);
+  box-shadow: 0 0 8px #ff3318;
+}
+
+/* Completed Phase State */
+.ritual-phase-row.completed .phase-node {
+  border-color: #cbb28d;
+  background: rgba(28, 10, 8, 0.8);
+  color: #e5cb9f;
+  box-shadow: 0 0 10px rgba(203, 178, 141, 0.4);
+}
+
+.ritual-phase-row.completed .phase-title-text {
+  color: #ede3d2;
+}
+
+.ritual-phase-row.completed .phase-pct {
+  color: #ede3d2;
+}
+
+.ritual-phase-row.completed .phase-divider {
+  background: rgba(203, 178, 141, 0.38);
+}
+
+/* ==========================================================================
+   BOTTOM INCANTATION ENTRY BAR
+   Anchor: Input bottom Y=860 in 1672x941 -> bottom: calc(100vh * (81 / 941))
+   ========================================================================== */
+.awakening-bottom-bar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100vh * (48 / 941));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 30;
+  width: min(640px, 92vw);
+  pointer-events: auto;
+}
+
+.incantation-instruction {
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  color: #cbb28d;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  text-shadow: 0 0 8px rgba(203, 178, 141, 0.35);
+  padding-left: 0.38em;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.incantation-instruction:hover {
+  color: #e5cb9f;
+}
+
+.incantation-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.incantation-field-wrap {
+  flex: 1;
+  max-width: 560px;
+  height: 50px;
+  position: relative;
+}
+
+.incantation-input {
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 4, 3, 0.75);
+  border: 1px solid rgba(203, 178, 141, 0.48);
+  border-radius: 1px;
+  padding: 0 20px;
+  color: #ede3d2;
+  font-family: var(--font-serif-title);
+  font-size: 15px;
+  letter-spacing: 0.32em;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.85), 0 0 14px rgba(0, 0, 0, 0.6);
+}
+
+.incantation-input::placeholder {
+  color: rgba(203, 178, 141, 0.45);
+  font-family: var(--font-serif-title);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.incantation-input:focus {
+  border-color: rgba(255, 51, 24, 0.7);
+  box-shadow: 0 0 22px rgba(196, 30, 18, 0.4), inset 0 0 10px rgba(0, 0, 0, 0.9);
+  background: rgba(18, 5, 4, 0.88);
+}
+
+.incantation-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: rgba(203, 178, 141, 0.25);
+}
+
+.incantation-submit-btn {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #ff3318;
+  background: rgba(26, 6, 5, 0.85);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 18px rgba(255, 51, 24, 0.65), inset 0 0 8px rgba(196, 30, 18, 0.4);
+}
+
+.incantation-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: rgba(203, 178, 141, 0.3);
+  box-shadow: none;
+  transform: none;
+}
+
+.incantation-submit-btn:hover {
+  border-color: #ff3318;
+  background: rgba(45, 8, 6, 0.95);
+  box-shadow: 0 0 30px rgba(255, 51, 24, 0.85), inset 0 0 14px rgba(255, 51, 24, 0.5);
+  transform: scale(1.08);
+}
+
+.incantation-submit-btn:active {
+  transform: scale(0.96);
+}
+
+/* Occult Diamond Divider beneath input */
+.awakening-bottom-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 130px;
+  margin-top: 18px;
+  color: rgba(203, 178, 141, 0.5);
+  font-size: 9px;
+  user-select: none;
+}
+
+.bottom-ornament-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(203, 178, 141, 0.4);
+}
+
+.bottom-ornament-diamond {
+  line-height: 1;
+  transform: scale(0.95);
+}
+
+/* Prompt Chips (Kept hidden unless explicitly needed to keep screen clean) */
+.incantation-chips {
+  display: none;
+}
+
+/* Validation Feedback */
+.ritual-feedback {
+  font-family: var(--font-serif-body);
+  font-style: italic;
+  font-size: 14.5px;
+  color: #ff3318;
+  min-height: 22px;
+  text-align: center;
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-shadow: 0 0 10px rgba(196, 30, 18, 0.7);
+  pointer-events: none;
+}
+
+.ritual-feedback.visible {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE ADAPTATIONS
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .awakening-left-panel {
+    left: 36px;
+  }
+  .awakening-right-panel {
+    right: 36px;
+  }
+}
+
+@media (max-width: 900px) {
+  .awakening-top-nav {
+    padding: 0 20px;
+    top: 20px;
+  }
+  .awakening-nav-links {
+    gap: 18px;
+  }
+  .awakening-left-panel {
+    left: 20px;
+    gap: 12px;
+  }
+  .awakening-right-panel {
+    right: 20px;
+  }
+  .awakening-bottom-bar {
+    bottom: 24px;
+  }
+}

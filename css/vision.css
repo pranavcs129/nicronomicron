@@ -1,0 +1,466 @@
+/* ==========================================================================
+   SCREENS 4 & 5: VISION (NORMAL & SUPERNATURAL STATES) — CSS SPECIFICATION
+   Visual References: vn normal.png and vn ubnormal.png
+   ========================================================================== */
+
+#screen-vision {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-abyss);
+}
+
+.vision-static-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 45% 45%, #120404 0%, #060101 70%, #020000 100%);
+  z-index: 1;
+}
+
+/* Vision Screen Master Layout */
+.vision-ui-layout {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+
+/* Central Camera + Right Panel Composition */
+.vision-composition {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  width: min(1320px, 86vw);
+  height: min(600px, 66vh);
+  margin-left: 80px; /* Accounts for left vertical nav */
+}
+
+/* 1. Large Central Camera Preview Frame */
+.vision-camera-frame {
+  position: relative;
+  flex: 1;
+  background: #000;
+  border: 1px solid var(--bronze-rule);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+/* Antique Gold Corner Bracket Flourishes */
+.frame-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--gold-antique);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 10;
+  transition: border-color 0.6s ease;
+}
+.frame-corner-tl { top: 6px; left: 6px; border-width: 1.5px 0 0 1.5px; }
+.frame-corner-tr { top: 6px; right: 6px; border-width: 1.5px 1.5px 0 0; }
+.frame-corner-bl { bottom: 6px; left: 6px; border-width: 0 0 1.5px 1.5px; }
+.frame-corner-br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
+
+/* Top Occult Crest Cresting Over the Frame */
+.frame-top-crest {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  z-index: 15;
+  color: var(--crimson-core);
+  filter: drop-shadow(0 0 8px var(--crimson-blood));
+  transition: color 0.6s ease;
+}
+
+/* Video Feed Element */
+.vision-video-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Mirror camera */
+  filter: contrast(1.1) brightness(0.95);
+  transition: filter 0.6s ease;
+}
+
+/* Canvas Fallback Feed (Used when camera unavailable or simulation active) */
+.vision-canvas-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+/* Live Badge inside frame */
+.frame-live-badge {
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: var(--bone-white);
+  text-transform: uppercase;
+  z-index: 12;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.live-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--crimson-glow);
+  box-shadow: 0 0 10px var(--crimson-glow);
+  animation: pulseGlow 1.4s infinite;
+}
+
+/* Vision Supernatural Glitch Overlays inside frame */
+.vision-glitch-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 30, 20, 0.2) 0%, transparent 70%);
+  mix-blend-mode: color-dodge;
+  transition: opacity 0.6s ease;
+}
+
+.vision-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  opacity: 0.15;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0px, rgba(0, 0, 0, 0.4) 1px, transparent 2px, transparent 4px);
+}
+
+/* Deadite Sight Anchor Rune Overlay (Revealed by Dead Sight ability) */
+.demon-anchor-marker {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--crimson-glow);
+  display: none;
+  place-items: center;
+  z-index: 14;
+  cursor: pointer;
+  animation: spinSlow 12s linear infinite, pulseGlow 1.5s infinite;
+  box-shadow: 0 0 30px var(--crimson-glow);
+  background: rgba(255, 30, 20, 0.15);
+}
+
+.demon-anchor-marker.visible {
+  display: grid;
+}
+
+.demon-anchor-label {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-serif-title);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--crimson-glow);
+  text-transform: uppercase;
+}
+
+/* 2. Right Side Observation Panel: "THE WATCHER SEES" */
+.vision-watcher-panel {
+  width: 320px;
+  background: rgba(14, 4, 3, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--bronze-rule);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.watcher-header-title {
+  font-family: var(--font-serif-title);
+  font-size: 13.5px;
+  letter-spacing: 0.35em;
+  color: var(--bone-white);
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bronze-rule);
+  margin-bottom: 30px;
+}
+
+.watcher-eye-symbol {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 30px auto;
+  color: var(--crimson-core);
+  filter: drop-shadow(0 0 10px var(--crimson-blood));
+  transition: all 0.6s ease;
+}
+
+.watcher-remarks-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.watcher-primary-text {
+  font-family: var(--font-serif-body);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--bone-white);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  transition: color 0.4s ease;
+}
+
+.watcher-divider-rule {
+  width: 100%;
+  height: 1px;
+  background: var(--bronze-rule);
+}
+
+.watcher-secondary-text {
+  font-family: var(--font-serif-body);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--bone-dim);
+  transition: color 0.4s ease;
+}
+
+/* 3. Bottom Camera Controls Row */
+.vision-bottom-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  z-index: 30;
+  margin-left: 40px;
+}
+
+/* Camera active pill */
+.camera-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(203, 178, 141, 0.3);
+  background: rgba(14, 4, 3, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.cam-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #38b000;
+  box-shadow: 0 0 8px #38b000;
+}
+
+.cam-status-label {
+  font-family: var(--font-serif-title);
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+}
+
+/* Central Inspect Button */
+.inspect-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.inspect-circle-btn {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 1.5px solid var(--crimson-core);
+  background: rgba(30, 6, 4, 0.7);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  color: var(--crimson-glow);
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 0 24px var(--crimson-blood);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inspect-circle-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--crimson-glow);
+  box-shadow: 0 0 35px var(--crimson-glow);
+  background: rgba(50, 9, 6, 0.9);
+}
+
+.inspect-action-label {
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+}
+
+/* Watcher mode toggle pill */
+.watcher-mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(203, 178, 141, 0.3);
+  background: rgba(14, 4, 3, 0.7);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.watcher-toggle-switch {
+  width: 38px;
+  height: 20px;
+  background: rgba(40, 10, 8, 0.7);
+  border-radius: 10px;
+  border: 1px solid var(--bronze-rule);
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.watcher-toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bone-white);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+}
+
+.watcher-mode-pill.active .watcher-toggle-switch {
+  background: var(--crimson-core);
+  border-color: var(--crimson-glow);
+}
+
+.watcher-mode-pill.active .watcher-toggle-switch::after {
+  transform: translateX(18px);
+  background: #fff;
+  box-shadow: 0 0 8px #fff;
+}
+
+/* Anomaly Quick Test Button */
+.anomaly-trigger-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 51, 24, 0.4);
+  background: rgba(30, 4, 4, 0.6);
+  color: var(--crimson-glow);
+  font-family: var(--font-serif-title);
+  font-size: 9.5px;
+  letter-spacing: 0.25em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.anomaly-trigger-btn:hover {
+  background: rgba(70, 10, 6, 0.85);
+  border-style: solid;
+  border-color: var(--crimson-glow);
+  box-shadow: 0 0 16px var(--crimson-blood);
+}
+
+/* ==========================================================================
+   SCREEN 5: SUPERNATURAL STATE TRANSFORMATION (Matches vn ubnormal.png)
+   ========================================================================== */
+
+#screen-vision.supernatural-anomaly .vision-camera-frame {
+  border-color: var(--crimson-glow);
+  box-shadow: 0 0 50px var(--crimson-glow), inset 0 0 30px rgba(255, 51, 24, 0.6);
+  animation: glitchFlicker 0.35s infinite;
+}
+
+#screen-vision.supernatural-anomaly .frame-corner {
+  border-color: var(--crimson-glow);
+}
+
+#screen-vision.supernatural-anomaly .frame-top-crest {
+  color: var(--crimson-glow);
+  transform: translateX(-50%) scale(1.2);
+  filter: drop-shadow(0 0 16px var(--crimson-glow));
+}
+
+#screen-vision.supernatural-anomaly .vision-glitch-overlay {
+  opacity: 0.75;
+  animation: pulseGlow 0.8s infinite;
+}
+
+#screen-vision.supernatural-anomaly .vision-video-feed,
+#screen-vision.supernatural-anomaly .vision-canvas-feed {
+  filter: contrast(1.6) brightness(0.85) sepia(0.6) hue-rotate(-50deg) saturate(2.4);
+}
+
+#screen-vision.supernatural-anomaly .live-indicator-dot {
+  background: #ff0055;
+  box-shadow: 0 0 16px #ff0055;
+}
+
+#screen-vision.supernatural-anomaly .vision-watcher-panel {
+  border-color: var(--crimson-glow);
+  background: rgba(35, 6, 4, 0.9);
+  box-shadow: 0 0 45px var(--crimson-blood);
+}
+
+#screen-vision.supernatural-anomaly .watcher-header-title {
+  color: var(--crimson-glow);
+  text-shadow: 0 0 12px var(--crimson-glow);
+  border-color: rgba(255, 51, 24, 0.4);
+}
+
+#screen-vision.supernatural-anomaly .watcher-eye-symbol {
+  color: var(--crimson-glow);
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 18px var(--crimson-glow));
+  animation: pulseGlow 0.6s infinite;
+}
+
+#screen-vision.supernatural-anomaly .watcher-primary-text {
+  color: #ff3318;
+  text-shadow: 0 0 16px rgba(255, 51, 24, 0.9);
+  font-weight: 600;
+}
+
+#screen-vision.supernatural-anomaly .watcher-secondary-text {
+  color: var(--bone-white);
+  font-weight: 500;
+}

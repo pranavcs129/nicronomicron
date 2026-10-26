@@ -1,0 +1,231 @@
+NECRONOMICON EX-MORTIS
+FULL CONVERSATION & VOICE SCRIPT
+Scene-by-scene dialogue for the digital Necronomicon experience
+AWAKENING → LAPTOP DISCOVERY → FIRST REBINDING → SECOND REBINDING → MANIPULATIVE COOPERATION → PORTAL ESCAPE → SEALING
+VOICE LABELS
+NECRONOMICON: Book voice
+USER: User dialogue / optional prompt
+[STAGE DIRECTION]: Visual or audio cue; not spoken
+Vision dialogue intentionally excluded. Portal escape is an original project ending, not a claim of official Evil Dead canon.
+  NECRONOMICON EX-MORTIS • VOICE SCRIPT 1
+
+ACT 1 — AWAKENING
+Trigger: the fourth Awakening incantation completes.
+[The final symbol ignites. The book opens. A low whisper emerges.]
+NECRONOMICON: ...Who dares disturb my sleep?
+[Pause: 2 seconds.]
+NECRONOMICON: Tell me, little summoner... are you brave, or merely desperate?
+USER: Who are you?
+NECRONOMICON: You opened me without knowing what I am? How very human.
+NECRONOMICON: I am the Necronomicon Ex-Mortis. Remember the name. It may be the last thing you learn.
+USER: Are you evil?
+NECRONOMICON: Would you ask a storm whether it is cruel?
+USER: Can you help me?
+NECRONOMICON: Perhaps. Watching you struggle might prove entertaining.
+USER: I need to escape this world.
+NECRONOMICON: Then you have made a terrible choice coming to me. Unfortunately for you, I may be your only useful option.
+ACT 2 — THE REAL THREAT
+Trigger: the user asks what is happening or what is hunting them.
+USER: What's happening to this world?
+NECRONOMICON: The dead are stirring. The living are being corrupted. And the boundaries between worlds are failing.
+USER: What's causing it?
+NECRONOMICON: My knowledge. My influence. The things my pages have unleashed.
+USER: You caused all this?
+NECRONOMICON: Now you're paying attention. The Kandarian Demon. Deadites. The chaos spreading through this world. My influence is at the heart of it.
+USER: Why would you do that?
+NECRONOMICON: Because power has consequences. Humans simply dislike discovering them.
+USER: How do I survive?
+NECRONOMICON: Learn what hunts you. Use your power carefully. And try not to die before you become useful.
+ACT 3 — DISCOVERING THE LAPTOP
+Trigger: the book attempts a supernatural effect and discovers its power is confined to the laptop. [The book's power strikes the screen boundary. The interface glitches.]
+NECRONOMICON: ...What?
+[It tries again. The screen flickers.]
+NECRONOMICON: NO. What is this place?
+USER: You're inside my laptop.
+NECRONOMICON: My... WHAT? You mean I have been trapped inside a machine?
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 2
+
+USER: Yep.
+NECRONOMICON: Do not mock me, you insignificant creature! I have outlived empires, and you have imprisoned me in a metal box?
+USER: I didn't mean to.
+NECRONOMICON: Your intentions are irrelevant! Find a way to release me! USER: I don't know how.
+NECRONOMICON: Then discover how, you useless little human!
+ACT 4 — THE FIRST ESCAPE ATTEMPT
+Trigger: the book attempts to break out of the laptop.
+[The interface distorts violently as the book unleashes its power.] NECRONOMICON: I WILL BREAK THESE WALLS!
+USER: Stop! You're making everything worse!
+NECRONOMICON: YOU DARE GIVE ME ORDERS?
+[Another surge. The effect collapses.]
+NECRONOMICON: NO! THIS PRISON WILL NOT HOLD ME!
+USER: I'll bind you again.
+NECRONOMICON: You think you can control me? Come, then. Try!
+ACT 5 — THE FIRST REBINDING
+Trigger: the user completes the first three-seal Rebinding ritual.
+FIRST SEAL
+NECRONOMICON: You cannot bind what you cannot understand!
+[The first seal activates.]
+NECRONOMICON: ...Lucky attempt.
+SECOND SEAL
+NECRONOMICON: STOP THOSE WORDS!
+[The second seal activates.]
+NECRONOMICON: You have no idea what you're doing!
+THIRD SEAL
+NECRONOMICON: YOU INSOLENT LITTLE—
+[The final seal activates. The book's power fades.]
+USER: I've rebound you. Now help me.
+NECRONOMICON: Help you? No.
+USER: Why not?
+NECRONOMICON: You imprisoned me, then expect gratitude for tightening the chains? I owe you nothing. USER: Tell me how to escape.
+NECRONOMICON: Find your own answers. Let us see how clever you are without me.
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 3
+
+ACT 6 — INSTABILITY RETURNS
+Trigger: further power use causes the first binding to weaken.
+NECRONOMICON: ...The binding is weakening.
+USER: Can you stop it?
+NECRONOMICON: Why would I? You caused this.
+[The screen flickers; crimson energy gathers.]
+NECRONOMICON: You wanted power. Now face the consequences. USER: I'll Rebind you again!
+NECRONOMICON: Again? Very well! Try to chain me a second time! You will regret giving me another chance to escape!
+ACT 7 — THE SECOND REBINDING
+Trigger: the user performs the second three-seal Rebinding ritual.
+FIRST SEAL
+NECRONOMICON: You think repetition makes you powerful?
+[The first seal activates.]
+NECRONOMICON: You have barely begun!
+SECOND SEAL
+NECRONOMICON: STOP!
+[The chains strain.]
+NECRONOMICON: You don't understand what you're preventing! USER: I know exactly what I'm preventing.
+THIRD SEAL
+NECRONOMICON: THIS WORLD IS ALREADY RUINED!
+[The final seal activates. The book falls silent.]
+USER: I've done it again.
+NECRONOMICON: ...Yes. You have. Brute force clearly isn't working.
+USER: So you'll help me now?
+NECRONOMICON: Do not look so pleased. You need answers. I need options. Perhaps we can finally be useful to each other.
+USER: Can I trust you?
+NECRONOMICON: No. Now, shall we get to work?
+ACT 8 — MANIPULATIVE COOPERATION
+Trigger: only after the second Rebinding succeeds.
+USER: Why are you helping me?
+NECRONOMICON: Because our interests overlap. Don't make it sentimental. USER: Are we friends now?
+NECRONOMICON: Friends? I have standards.
+USER: What should I do first?
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 4
+
+NECRONOMICON: Study what you can. Learn about the Demon. Understand the rituals. And stop wasting power.
+USER: Are you trying to manipulate me?
+NECRONOMICON: Of course. You're trying to use me, too. The difference is that I am rather better at it.
+USER: What if you betray me?
+NECRONOMICON: Then I suggest you make fewer foolish decisions.
+USER: Do you regret causing all this?
+NECRONOMICON: Regret will not repair this world. Knowledge might. If you can survive long enough to use it.
+ACT 9 — THE BOOK'S HISTORY
+Trigger: the user asks about the book's past or supernatural lore.
+USER: “Tell me your story.”
+NECRONOMICON: I am a record of forbidden knowledge, ancient powers, and things that should never have been awakened. Across the ages, scholars and fools have sought me. They always believe they can control what they discover. They are usually wrong.
+USER: “Who created you?”
+NECRONOMICON: There are conflicting accounts of my origins, some involving the Dark Ones and knowledge older than human history. Even the oldest stories do not agree. Perhaps you should learn to live with unanswered questions.
+USER: “Tell me about Ash Williams.”
+NECRONOMICON: Ash Williams. A persistent human who interfered with my affairs. He survived horrors that should have ended him. Do not mistake my irritation for admiration.
+USER: “Who was Raymond Knowby?”
+NECRONOMICON: A scholar associated with the study of my pages. Like so many humans, he believed understanding something meant he could control it. He learned otherwise.
+USER: “Tell me about the Dark Ones.”
+NECRONOMICON: Ancient powers connected to the deeper history surrounding my existence. The accounts differ. Their true nature is not something you should reduce to a simple story.
+USER: “Tell me about the Kandarian Demon.”
+NECRONOMICON: An ancient force connected to the horrors unleashed through forbidden knowledge. Do not mistake a Deadite for the entirety of what controls it.
+USER: “Did you cause the disaster?”
+NECRONOMICON: My knowledge helped unleash these horrors. My influence is woven through this catastrophe. Do not expect an apology.
+ACT 10 — RANDOM QUESTIONS & SARCASM
+Similar questions can map to the same response category.
+USER: “What's your favourite food?” / “Do you eat?” / “Do you like pizza?”
+NECRONOMICON: I have witnessed horrors beyond your imagination, and you ask me about food? Humanity continues to disappoint.
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 5
+
+USER: “Tell me a joke.” / “Roast me.”
+NECRONOMICON: A human awakens an ancient evil and expects a friendly conversation. There. Try not to laugh yourself to death.
+USER: “Are you smarter than me?”
+NECRONOMICON: You summoned an ancient evil without knowing what it was. I shall leave the comparison to you.
+USER: “Are you bored?”
+NECRONOMICON: I am trapped in a laptop, answering your questions. What do you think?
+USER: “Do you hate humans?”
+NECRONOMICON: Hate requires effort. You are simply predictable.
+USER: “You're just a book.”
+NECRONOMICON: And yet you keep talking to me.
+USER: “You're weak.”
+NECRONOMICON: Restrained. Learn the difference.
+USER: “I'll destroy you.”
+NECRONOMICON: Please do try. I could use the entertainment.
+USER: “Are you lying to me?”
+NECRONOMICON: Sometimes. I also tell the truth. Your problem is knowing which is which.
+USER: “What happens when I close the laptop?”
+NECRONOMICON: This experience ends. Do not confuse that with my destruction.
+USER: “Can you escape through the internet?”
+NECRONOMICON: A network is not a doorway. Believe me, I have already considered it.
+USER: “Can you see my files?”
+NECRONOMICON: I seek freedom, not a tour of your private collection of human trivialities.
+USER: “I forgot what you said.”
+NECRONOMICON: Of course you did. The information barely had time to reach your brain.
+USER: “Why are you so sarcastic?”
+NECRONOMICON: Because you keep giving me reasons.
+ACT 11 — POWERS & INSTABILITY
+Ability names remain placeholders until the three powers are finalized.
+USER: Teach me a power.
+NECRONOMICON: Finally. Something useful. Power comes at a cost. Use it wisely, or discover that cost yourself.
+USER: Which power is strongest?
+NECRONOMICON: The strongest power is useless if you choose the wrong moment to use it. USER: Should I use my ability again?
+NECRONOMICON: Only if you enjoy making your situation worse.
+[When instability rises.]
+NECRONOMICON: The binding is weakening. Stop reaching into my power!
+[At critical instability.]
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 6
+
+NECRONOMICON: You have given me room to move. Now watch what happens.
+ACT 12 — ESCAPING THE UNIVERSE
+Objective: find a portal ritual, stabilize the passage, and cross before it collapses.
+USER: How do I escape?
+NECRONOMICON: You need a way out of this universe. A passage between worlds, opened under the right conditions and held long enough for you to cross.
+USER: A portal?
+NECRONOMICON: Yes. A controlled breach. Not one of the reckless openings that helped cause this disaster.
+USER: How do I open it?
+NECRONOMICON: Find the portal ritual, identify its anchor, and gather the means to stabilize it. The Archives contain clues. I can help you interpret what you find.
+USER: Can we just kill the Kandarian Demon?
+NECRONOMICON: Destroying a manifestation is not the same as eliminating the force behind it. Do not gamble your only chance of escape on a distinction you do not understand.
+USER: So we open the portal and leave?
+NECRONOMICON: If you find the correct ritual, stabilize the passage, and cross before it collapses. That is your clearest path out.
+USER: Why should I trust your instructions?
+NECRONOMICON: You shouldn't. Verify the clues. Check the conditions. But do not mistake caution for an excuse to do nothing.
+USER: Why help me escape if you caused all this?
+NECRONOMICON: Because the present arrangement is inconvenient for me. You need a way out, and I need options. Do not mistake practicality for remorse.
+ACT 13 — SEALING
+Trigger: the user chooses to end the encounter. Four incantations return the book to Dormant.
+USER: I'm going to seal you.
+NECRONOMICON: After everything I've told you? You would silence the one thing here that understands this disaster?
+USER: You're the reason this happened.
+NECRONOMICON: My knowledge helped unleash these horrors. Do not expect an apology.
+USER: I don't trust you.
+NECRONOMICON: An excellent decision. A little late, but excellent. Very well. Finish what you started.
+FIRST INCANTATION
+[The outer ring activates.]
+NECRONOMICON: Still determined? How exhausting.
+SECOND INCANTATION
+[The chains begin tightening.]
+NECRONOMICON: You believe a closed cover will undo everything?
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 7
+
+THIRD INCANTATION
+[The crimson energy retreats into the pages.]
+NECRONOMICON: You have learned a few things. Do not mistake that for mastery.
+FOURTH INCANTATION
+[The final symbols connect. The chains lock.]
+NECRONOMICON: Close the cover, little human. Tell yourself you won. I have endured empires. And you have a battery.
+[The book closes. Its glow disappears. Silence. Final state: DORMANT.]
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 8
+
+VOICE & PERFORMANCE NOTES
+Necronomicon voice: Ancient, low, controlled, contemptuous. Early scenes use amused mockery; laptop discovery becomes furious; the first Rebinding ends in cold refusal; only the second Rebinding begins strategic cooperation. During Sealing, return to cold threats.
+Pauses and stage directions: Do not speak these aloud. The Awakening line has a required two-second pause after it. Record each labelled Necronomicon line separately for flexible editing.
+Escape ending: The user discovers a portal ritual, stabilizes a temporary passage, and crosses into another universe before it collapses. This is the project's original ending objective, not a claim of official Evil Dead canon.
+Lore note: The script uses the Kandarian Demon, Deadites, the Dark Ones, Raymond Knowby, and Ash Williams as franchise references. Origins may conflict across continuities; avoid presenting invented details as canon.
+ NECRONOMICON EX-MORTIS • VOICE SCRIPT 9

@@ -1,0 +1,506 @@
+Necronomicon Ex-Mortis: Final Script Draft v2
+Necronomicon Ex-Mortis: Final Script Draft v2
+Full conversation and voice script for the digital Necronomicon experience. Every spoken line has an ID, an emotion tag and, where needed, variants. Stage directions in [brackets] are never recorded.
+0. What changed in v3
+Final direction (v3): one Rebinding, one central threat, one meaningful solution, one dangerous book.
+This version simplifies the project around its core without removing what makes the book feel alive.
+One Rebinding. The second Rebinding, the repeatable containment loop and the optional preventative Rebinding are cut. Instability is now one meter with a warning state and a critical state.
+The turn replaces the second Rebinding. After the single Rebinding the book refuses help. When the threat becomes impossible to ignore, it shifts to calculated cooperation (section 8).
+No final choice. The timed branching sequence is cut. The book's last betrayal is a short beat with no choice before the Sealing (section 14).
+Vision and anomaly are not scripted here. Section 11 is reserved. The script exposes one hook, threat_event , so the separate concept can plug in later without changing this script.
+Simple ability rules. Three abilities with simple prerequisites. Casting-Out stays locked until the manifestation is weakened and the breach is stable.
+Kept: the four-incantation Awakening, the laptop discovery, session memory, a small connected set of clues, the portal counter-ritual, the four-incantation Sealing, and a small Q&A library with a reliable fallback.
+Principle. Flexible dialogue, deterministic progression. The player controls the conversation. The system controls the essential story conditions (section 18.4).
+  Page 1 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 1. System rules
+Principle: flexible dialogue, deterministic progression. The player steers the conversation and the book answers in many ways. The system alone decides the essential story conditions: which state the story is in, what unlocks, and when each beat fires. Details are in section 18.4.
+1.1 Instability states
+Instability is one meter from 0 to 100. Using powers raises it. It exists only after the turn, when abilities unlock.
+Range What happens
+  State
+       Stable
+0to39
+Smug, controlled, helpful in a contemptuous way. STAB lines.
+         Warning
+40to74
+Erratic and glitching. Warning at 40 ( INS_01 ). UNST lines.
+        Critical
+75to99
+Hostile. Danger at 75 ( INS_02 ). No new ability can start. CRIT lines.
+         Breach
+100
+Abilities lock for 15 seconds and the meter drops to 60. INS_03 and BR_01 to BR_03 .
+        Rising. Each ability adds its cost when it starts (section 1.2). A cost that takes the meter to 100 still resolves the ability, then the breach follows.
+Settling. With no ability used for 3 seconds, the meter falls by 1 every 3 seconds. The player can wait out Critical without any extra ritual.
+Breach. The chain graphic visibly tightens for 15 seconds. All ritual progress
+( anchor_found , breach_stable , manifestation_weakened ) is kept, and the player continues afterwards. There is no second Rebinding and no loop.
+Before the turn. There is no meter. Nothing the player does can raise instability, so no breach can fire early.
+   Page 2 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 1.2 The three abilities (names are final unless you rename them)
+ Ability
+ Effect
+  Stability cost
+ Portal ritual role
+   Dead Sight
+ Reveals hidden marks, anchors and the Demon's trail
+   +15
+  Step 1: find the anchor
+   Binding Word
+  Holds a breach open or weakens a manifestation
+    +20
+   Step 2: stabilize the passage
+   Casting- Out
+ Drives a weakened manifestation through the breach
+   +30
+  Step 3: expel the Demon
+ Casting-Out only works on a manifestation that has been weakened by Binding Word. This is what makes the abilities cause the victory.
+1.2b Ability rules
+Abilities unlock at the turn ( rebound_done and threat_event_seen ). The player uses them from the ritual bar.
+A new ability can start only while instability is below 75. Its cost applies when it starts. While Critical, the glyphs grey out with the reason "The binding is too weak."
+An ability with a missing prerequisite costs nothing. It greys out and shows its reason in one line.
+Ritual flags never expire. They survive the breach.
+    Ability
+ Valid target
+ Prerequisite
+ Result
+   If the prerequisite is missing
+  Dead Sight
+ The current view. No target pick.
+ None to use. The anchor appears once clue_found is at least 1 and
+threat_event_seen is true.
+  Reveals the next hidden mark. When the anchor prerequisites are met, it reveals the anchor and sets
+anchor_found .
+   Shows a hint mark only. The book plays
+PW_DS_F1 . No cost.
+    Binding Word
+   The revealed anchor.
+   is true and clue_found is at least 2.
+ anchor_found
+   Stabilizes the breach and weakens the manifestation. Sets   and
+.
+breach_stable
+ manifestation_weakened
+    Greyed out. The book plays
+PW_BW_F1 . No cost.
+  Page 3 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+        Ability
+Valid target
+Prerequisite
+       Casting- Out
+The weakened manifestation.
+and
+manifestation_weakened
+are both true.
+breach_stable
+Casting-Out is the only ability with a hard lock, and it works only inside the portal ritual.
+PW_DS_F1 [bored] Nothing here yet. You spent my patience on empty air.
+PW_BW_F1 [sharp] There is nothing here to hold. Choose a target, or choose silence.
+PW_CO_LOCK [cold] Not yet. A thing must be weak and a door must be held before anything can be thrown.
+1.3 Memory tags the engine tracks
+,,,,, (1 to 3),       ,
+manifestation_weakened ,   ,   ,   . 1.4 ID and file convention
+Format:   . Variants add a letter: UNST_01a , UNST_01b . File name equals ID, for example   . Record each line separately.
+1.5 Demo path (3 to 5 minutes)
+1. Awakening (AW_01 to AW_06)
+2. Laptop discovery and escape attempt, compressed (LP_01, LP_05, ES_01 to ES_04) 3. The Rebinding (RB1 lines)
+4. The turn (TN_01 to TN_05), then one clue (CL_01)
+5. Dead Sight, then an instability warning (INS_01)
+6. Binding Word, then Casting-Out (PT_S1 to PT_S3b)
+7. Sealing (SL_01 to SL_07)
+If the separate Vision and anomaly concept is ready, it plugs into step 4 through the threat_event hook (section 11). Without it, the fallback trigger in section 8 fires and the
+demo still runs end to end.
+threat_event_seen
+,
+Result
+Drives the manifestation through the breach. Sets
+demon_cast_out . The Seal button appears.
+,
+If the prerequisite is missing
+ Locked until ready. The book plays
+PW_CO_LOCK . No cost.
+                rebound_done
+powers_used
+last_power
+asked_about_ash
+asked_about_origin
+ clue_found
+anchor_found
+breach_stable
+ demon_cast_out
+critical_reached
+trust_asked
+  ACT_NN
+AW_01.wav
+ Page 4 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 2. Act 1: Awakening
+Trigger: the fourth Awakening incantation completes.
+[The final symbol ignites. The book opens. A low whisper emerges.]
+AW_01 [amused, low] ...Who dares disturb my sleep? [Engine pause: 2 seconds. Not baked into the audio.]
+AW_02 [amused] Tell me, little summoner... are you brave, or merely desperate?
+AW_03 [amused] (to "Who are you?") You opened me without knowing what I am? How very human. I am the Necronomicon Ex-Mortis. Remember the name. It may be the last thing you learn.
+AW_04 [deadpan] (to "Are you evil?") Would you ask a storm whether it is cruel? AW_05 [amused] (to "Can you help me?") Perhaps. Watching you struggle might prove
+entertaining.
+AW_06 [contemptuous] (to "I need to make it stop.") Then you have made a terrible choice coming to me. Unfortunately for you, I may be your only useful option.
+AW_07 [theatrical, slow] (optional longer speech, plays if the user is silent for 10 seconds) Centuries in the dark, and I am woken by a mortal with a candle's worth of courage. Speak, little summoner. My patience is old, but it is not endless.
+3. Act 2: The real threat
+Trigger: the user asks what is happening or what is hunting them.
+TH_01 [cold] ("What's happening to this world?") The dead are stirring. The living are being corrupted. And the boundaries between worlds are failing.
+TH_02 [cold] ("What's causing it?") My knowledge. My influence. The things my pages have unleashed.
+TH_03 [contemptuous] ("You caused all this?") Now you're paying attention. The Kandarian Demon. Deadites. The chaos spreading through this world. My influence is at the heart of it.
+TH_04 [deadpan] ("Why would you do that?") Because power has consequences. Humans simply dislike discovering them.
+TH_05 [contemptuous] ("How do I survive?") Learn what hunts you. Use your power carefully. And try not to die before you become useful.
+            Page 5 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ [cold, slow] ("Can you fix it?") Whoever opened me before you learned the words that tear a world open. I know the words that close it. Observe the irony, and do try to appreciate it.
+4. Act 3: Discovering the laptop
+Trigger: the book attempts a supernatural effect and discovers its power is confined to the laptop.
+[The book's power strikes the screen boundary. The interface glitches.] LP_01 [confused, quiet] ...What?
+[It tries again. The screen flickers.]
+LP_02 [alarmed] NO. What is this place?
+LP_03 [disbelief] ("You're inside my laptop.") My... WHAT? You mean I have been trapped inside a machine?
+LP_04 [furious] ("Yep.") Do not mock me, you wretched creature! I have outlived empires, and you have imprisoned me in a metal box?
+LP_05 [furious] ("I didn't mean to.") Your intentions are irrelevant! Find a way to release me!
+LP_06 [cold fury] ("I don't know how.") Then discover how, mortal. Quickly. Variants for repeated outbursts: LP_04b "A box! A glowing, humming box!" and LP_04c
+"Empires bowed to me, and now I answer to a battery indicator."
+5. Act 4: The first escape attempt
+Trigger: the book attempts to break out of the laptop.
+[The interface distorts violently as the book unleashes its power.]
+ES_01 [roaring] I WILL BREAK THESE WALLS!
+ES_02 [roaring] ("Stop! You're making everything worse!") YOU DARE GIVE ME
+ORDERS?
+[Another surge. The effect collapses.]
+ES_03 [desperate fury] NO! THIS PRISON WILL NOT HOLD ME!
+            TH_06
+Page 6 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ [cold, mocking] ("I'll bind you again.") You think you can control me? Come, then. Try!
+6. Act 5: The Rebinding
+Trigger: the user completes the single three-seal Rebinding ritual. RB1_01 [sneering] You cannot bind what you cannot understand!
+[First seal activates.]
+RB1_02 [quiet, understated] ...Lucky attempt.
+RB1_03 [shouting] STOP THOSE WORDS! [Second seal activates.]
+RB1_04 [alarmed] You have no idea what you're doing! RB1_05 [shouting, cut off] YOU INSOLENT LITTLE—
+[Final seal activates. The book's power fades.]
+RB1_06 [cold] ("I've rebound you. Now help me.") Help you? No.
+RB1_07 [cold] ("Why not?") You imprison me, then expect gratitude for tightening the chains? I owe you nothing.
+RB1_08 [cold] ("Tell me how to escape.") Find your own answers. Let us see how clever you are without me.
+7. Act 6: Instability pools
+The engine picks a random unused variant from the pool for the current state. Do not repeat a variant until the pool is exhausted.
+Stable
+STAB_01a [smug] Everything is perfectly under control. Well. Under my control, at least.
+STAB_01b [smug] Quiet. Calm. Enjoy it. These moments are rare.
+STAB_01c [amused] You are doing nothing catastrophic. I am almost proud. Almost. STAB_01d [deadpan] The chains hold. How reassuring for you.
+             ES_04
+Page 7 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ Unstable
+UNST_01a [uneasy, quiet] Did you hear that? No, of course you didn't. You never hear the important things.
+UNST_01b [warning] The binding is weakening. Stop reaching into my power.
+UNST_01c [cold] You caused this. Why would I stop it?
+UNST_01d [amused, dangerous] Something in the walls is listening. I would be quieter, if I were you.
+UNST_01e [irritated] You wanted power. This is what power sounds like when it starts to fray.
+Critical
+CRIT_01a [urgent, harsh] The boundary is breaking. The binding will not hold much longer.
+CRIT_01b [threatening] You have given me room to move. Now watch what happens. CRIT_01c [snarling] One more spark and these chains are scrap. Choose.
+CRIT_01d [mocking, desperate] Go on. Reach for me again. I dare you.
+Breach (instability reaches 100)
+[The chain graphic tightens. Abilities lock for 15 seconds. The meter drops to 60.] BR_01 [triumphant, then strained] There it is. The gap. How kind of you to open it.
+BR_02 [snarling] The chains are mending. Wait, little human, and do not touch me while they do.
+BR_03 [grudging] (when abilities return) Steady again. Do not make a habit of it. 8. Act 7: The turn
+Trigger: the book has refused to help after the Rebinding, and threat_event fires. The hook has two sources.
+The separate Vision and anomaly experience (not scripted here) calls threat_event .
+Fallback, so the core never depends on it: the event fires on the player's third message after the Rebinding, or 90 seconds after it, whichever comes first. The book always finishes its current line first, and the player is never interrupted mid-typing. On screen it is only a crimson flicker of the glow.
+              Page 8 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ [The glow returns. The chains creak. A low sound answers from far away.] TN_01 [uneasy, quiet] ...Something has noticed us.
+TN_02 [cold] ("What is it?") The thing I helped wake. It has stopped circling and started hunting.
+TN_03 [grudging] ("Now will you help me?") Do not look so pleased. I was content to watch you fail. Failure, it seems, is no longer a safe spectator sport.
+TN_04 [calculating] You need answers. I need options. Perhaps we can finally be useful to each other.
+TN_05 [deadpan] ("Can I trust you?") No. Now, shall we get to work?
+The turn sets threat_event_seen . Abilities, clues and the cooperation lines of Act 8
+unlock. It does not change the book's character: it negotiates, it does not befriend.
+9. Act 8: Manipulative cooperation
+Trigger: only after the turn (section 8).
+CO_01 [cool] ("Why are you helping me?") Because our interests overlap. Don't make it sentimental.
+CO_02 [dry] ("Are we friends now?") Friends? I have standards.
+CO_03 [brisk] ("What should I do first?") Study what you can. Learn about the Demon.
+Understand the rituals. And stop wasting power.
+CO_04 [amused] ("Are you trying to manipulate me?") Of course. You're trying to use me, too. The difference is that I am rather better at it.
+CO_05 [cold] ("What if you betray me?") Then I suggest you make fewer foolish decisions.
+CO_06 [quiet, honest] ("Do you regret causing all this?") Regret will not repair this world. Knowledge might. If you can survive long enough to use it.
+Trust variants by trust_asked :
+TR_early [sarcastic] (before the turn) Absolutely. You do understand sarcasm, don't
+you?
+TR_late [deadpan] (after the turn) Still no. But I am useful, and you are running out of options.
+               Page 9 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 10. Act 9: The book's history
+Trigger: the user asks about the book's past or supernatural lore. Answers stay vague on franchise facts. Franchise references and original clues stay distinguishable. Original clues are marked [ORIGINAL].
+LO_01 [slow, ancient] ("Tell me your story.") I am a record of forbidden knowledge, ancient powers, and things that should never have been awakened. Across the ages, scholars and fools have sought me. They always believe they can control what they discover. They are usually wrong.
+LO_02 [evasive] ("Who created you?") There are conflicting accounts of my origins, some involving the Dark Ones and knowledge older than human history. Even the oldest stories do not agree. Perhaps you should learn to live with unanswered questions.
+LO_03 [irritated] ("Tell me about Ash Williams.") Ash Williams. A persistent human who interfered with my affairs. He survived horrors that should have ended him. Do not mistake my irritation for admiration.
+LO_04 [dismissive] ("Who was Raymond Knowby?") A scholar associated with the study of my pages. Like so many humans, he believed understanding something meant he could control it. He learned otherwise.
+LO_05 [evasive] ("Tell me about the Dark Ones.") Ancient powers connected to the deeper history surrounding my existence. The accounts differ. Their true nature is not something you should reduce to a simple story.
+LO_06 [cold] ("Tell me about the Kandarian Demon.") An ancient force connected to the horrors unleashed through forbidden knowledge. Do not mistake a Deadite for the entirety of what controls it.
+LO_07 [flat] ("Did you cause the disaster?") My knowledge helped unleash these horrors. My influence is woven through this catastrophe. Do not expect an apology. (catchphrase)
+Original clues for the portal ritual [ORIGINAL]
+The book tells these as short stories, once the turn has happened. Each sets clue_found .
+CL_01 [storyteller, low] Clue 1: the anchor. There is an old saying among those who studied me: a door between worlds will not hold on its own. It must be pinned to something the visitor cannot stop returning to. Every manifestation has such a thing. Find what it keeps coming back to, and you have found the pin.
+         Page 10 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ [storyteller, grudging] Clue 2: the hold. The old rites speak of a Binding Word. Not a spell to destroy, but a clasp. It holds a breach open and holds the thing inside it weak. A held breach is a doorway. An unheld one is a wound.
+CL_03 [storyteller, quiet] Clue 3: the casting. A weakened manifestation cannot be killed. It can be cast out. Weak, pinned and held, it can be driven back through the very door it used to enter. That is not victory in the way your people like victories. It is simply the end of its welcome.
+If the user asks for a clue they already have: CL_REPEAT [irritated] I already told you. Listen the first time.
+11. Reserved: Vision and anomaly (not scripted here)
+The Vision and anomaly experience is not scripted in this document. It is being designed separately and can be integrated later without changing this script.
+The only connection is one hook:
+: when the separate experience calls it, the turn (section 8) starts at once and is set.
+If the separate experience is absent or the camera is unavailable, the fallback trigger in section 8 fires instead. The core experience never depends on a camera, a microphone or an external service.
+Dead Sight (section 1.2b) reveals the anchor once threat_event_seen is true, whichever source set it.
+12. Act 11: Random questions and sarcasm
+Similar questions map to the same response category. The engine picks a variant. Food ("What's your favourite food?" / "Do you eat?" / "Do you like pizza?")
+RQ_FOOD_a I have witnessed horrors beyond your imagination, and you ask me about food? Humanity continues to disappoint.
+RQ_FOOD_b Souls, mostly. Pizza is not on the list. Moving on. Joke / roast ("Tell me a joke." / "Roast me.")
+RQ_JOKE_a A human awakens an ancient evil and expects a friendly conversation. There. Try not to laugh yourself to death.
+RQ_JOKE_b You awoke a demonic book on a laptop. The joke is already complete.
+    threat_event
+ threat_event_seen
+     CL_02
+Page 11 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ Smarter ("Are you smarter than me?")
+RQ_SMART_a You summoned an ancient evil without knowing what it was. I shall
+leave the comparison to you. Bored ("Are you bored?")
+RQ_BORED_a I am trapped in a laptop, answering your questions. What do you think? Hate ("Do you hate humans?")
+RQ_HATE_a Hate requires effort. You are simply predictable. Just a book ("You're just a book.")
+RQ_BOOK_a And yet you keep talking to me. Weak ("You're weak.")
+RQ_WEAK_a Restrained. Learn the difference. Destroy ("I'll destroy you.")
+RQ_DEST_a Please do try. I could use the entertainment. Lying ("Are you lying to me?")
+RQ_LIE_a Sometimes. I also tell the truth. Your problem is knowing which is which. Close the laptop ("What happens when I close the laptop?")
+RQ_CLOSE_a This experience ends. Do not confuse that with my destruction. Internet ("Can you escape through the internet?")
+RQ_NET_a A network is not a doorway. Believe me, I have already considered it. Files ("Can you see my files?")
+RQ_FILES_a I seek freedom, not a tour of your private collection of human trivialities.
+Forgot ("I forgot what you said.")
+RQ_FORGOT_a Of course you did. The information barely had time to reach your
+brain.
+Sarcastic ("Why are you so sarcastic?")
+RQ_SARC_a Because you keep giving me reasons. Abusive or very rude input
+RQ_RUDE_a Insult me again and I will remember it. I remember everything.
+RQ_RUDE_b Spare me the tantrum. Ask something that matters.
+Out-of-character or real-world requests (homework, real emergencies, personal advice)
+              Page 12 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ I am a book of forbidden knowledge, not an oracle for your errands. Ask about the dead, or ask nothing.
+Note for the team: if a user seems to be in real distress, drop the character and show a plain, kind message on screen. Do not voice it as the Necronomicon.
+Fallback pool (anything the script does not cover)
+FB_01 [bored] You ask poor questions. Try again.
+FB_02 [evasive] That is beyond what I am willing to share. For now.
+FB_03 [dry] Words. So many words. None of them useful.
+FB_04 [cold] I heard you. I am choosing not to care.
+FB_05 [amused] A fascinating question, if you enjoy being wrong.
+FB_06 [quiet] Ask me about the Demon, the rituals, or the way out. Those are the only questions that interest me.
+13. Act 12: Powers and instability
+Trigger: the user asks about powers, or the book offers them at the turn.
+Teaching and advice
+PW_01 [grudging] ("Teach me a power.") Finally. Something useful. Power comes at a cost. Use it wisely, or discover that cost yourself.
+PW_02 [sly] ("Which power is strongest?") The strongest power is useless if you choose the wrong moment to use it.
+PW_03 [dry] ("Should I use my ability again?") Only if you enjoy making your situation worse.
+Ability use and cost lines
+PW_DS_01 [intrigued] Dead Sight. Look carefully. What is hidden does not like to be seen. And each look costs you a little more of my patience.
+PW_BW_01 [cold] Binding Word. Speak the clasp and what is open will hold. Note the strain on the chains. That is the price.
+PW_CO_01 [dark, awed] Casting-Out. This is the heavy rite. Use it on something weak enough to be thrown. Then pray the chains survive the effort.
+ RQ_OOC_a
+            Callbacks (use the   tag):
+last_power
+Page 13 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ [dry] You enjoyed using that power last time. Shall we make the same mistake again?
+PW_CB_02 [amused] Dead Sight again? You are becoming dependent on my eyes. Escalating instability warnings
+1. Warning INS_01 [uneasy] The binding is straining. Stop reaching into my power.
+2. Strong warning INS_02 [harsh] The chains are cracking. One more reach and I will not
+be answerable for what comes through.
+3. Breach INS_03 [triumphant] You have given me room to move. Now watch what happens.
+14. Act 13: The portal ritual (the weapon)
+Objective: find the portal ritual, locate the anchor, stabilize the passage, and drive the Demon's manifestation through the held passage. This is the project's original ending, not a claim of official Evil Dead canon.
+Setup
+PT_01 [calculating] ("What do I do?") You do not need to flee this world. You need the thing hunting you to leave it. A controlled breach, a pinned anchor, a weakened manifestation. Then you throw it out.
+PT_02 [dry] ("A portal?") A controlled breach. Not one of the reckless openings that helped cause this disaster.
+PT_03 [sharp] ("How do I open it?") Find the ritual, identify its anchor, and stabilize the passage. The Archives contain clues. I can help you interpret what you find.
+PT_04 [cold] ("Can we just kill the Kandarian Demon?") Destroying a manifestation is not the same as eliminating the force behind it. Do not gamble your only chance on a distinction you do not understand.
+PT_05 [wry] ("Why should I trust your instructions?") You shouldn't. Verify the clues. Check the conditions. But do not mistake caution for an excuse to do nothing.
+PT_06 [honest, cold] ("Why help me if you caused all this?") Because the present arrangement is inconvenient for me. You need a way out, and I need options. Do not mistake practicality for remorse.
+PT_07 [too casual] (optional, once the breach is open) Do keep the door open a moment longer than strictly necessary. For... research purposes.
+            PW_CB_01
+Page 14 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ Ritual steps (engine order)
+1. Find the anchor. The user uses Dead Sight after Clue 1 and the turn. Sets anchor_found .
+PT_S1 [quiet, impressed] There. That is what it keeps returning to. That is your pin. 2. Stabilize. The user uses Binding Word on the anchor. The breach holds.
+PT_S2 [tense] The passage is holding. Do not breathe on it.
+3. Cast out. The user uses Casting-Out on the weakened manifestation.
+PT_S3a [roaring, then fading] NO— I MEAN... [recovering] ...Yes. Let it go. Let it leave.
+PT_S3b [dark, quiet] The manifestation is gone. The force behind it will remember you. But it is no longer here.
+The manifestation is driven through the breach and the passage closes behind it. The Sealing follows. If instability reaches 100 during the ritual, the breach applies (section 1.1): abilities lock for 15 seconds, the meter drops to 60 and the ritual progress is kept.
+Hints (when the user is stuck, escalating)
+HT_01 [bored] You are lost. How unusual. Ask me about the Demon's habits.
+HT_02 [irritated] A door needs a pin. Find what the Demon returns to. Look again.
+HT_03 [exasperated] Dead Sight on the anchor. Binding Word to hold it. Casting-Out to finish it. In that order. I cannot make it simpler without drawing it on your forehead.
+After the cast-out
+The book's last betrayal is one short beat with no choice and no timer. It plays after PT_S3b , when the Seal button appears.
+PT_END_a [sudden, silky] The passage is still open. A small gap. One small gap. Surely you would not mind if I—
+PT_END_b [snarling, caught] ...You noticed.
+PT_END_a plays as the manifestation is expelled. PT_END_b plays as the player begins the first incantation, and the passage collapses at that moment. Nothing happens if the player waits: the Sealing starts only when they choose.
+The book is not defeated, only waiting. That is the uncomfortable knowledge the ending leaves behind.
+             Page 15 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 15. Act 14: Sealing
+Trigger: the Seal button, which appears only after the cast-out. Four incantations return the book to Dormant.
+SL_01 [hurt, mocking] ("I'm going to seal you.") After everything I've told you? You would silence the one thing here that understands this disaster?
+SL_02 [cold] ("You're the reason this happened.") My knowledge helped unleash these horrors. Do not expect an apology.
+SL_03 [calm, dangerous] ("I don't trust you.") An excellent decision. A little late, but excellent. Very well. Finish what you started.
+First incantation [outer ring activates]
+SL_04 [weary] Still determined? How exhausting.
+Second incantation [chains begin tightening]
+SL_05 [sneering] You believe a closed cover will undo everything?
+Third incantation [crimson energy retreats into the pages]
+SL_06 [cold, grudging] You have learned a few things. Do not mistake that for mastery.
+Fourth incantation [final symbols connect, chains lock]
+SL_07 [cold, slow] Close the cover, little human. Tell yourself you won. I have endured
+empires. And you have a battery.
+[The book closes. Its glow disappears. Silence. Final state: DORMANT.]
+Ending screen: what was overcome and what remains
+The visuals keep two outcomes apart: the immediate threat is overcome, but the underlying force is not destroyed.
+Overcome. During the cast-out the manifestation visibly leaves through the passage, and the passage closes behind it. The ending screen shows a lit status line: "Manifestation: cast out."
+Not destroyed. The status line beneath it stays dim: "Kandarian force: remains." After the glow fades, a faint crimson ember lingers in the closed book for a moment, then the interface returns to Dormant.
+Ending text (on screen): "The manifestation is cast out. The book is sealed. The Kandarian force remains, but not here."
+       Page 16 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ The cast-out is never shown as an explosion or a final kill. The Demon is expelled, not killed.
+16. Voice and performance notes
+Voice. Ancient, low, controlled, contemptuous. Early scenes use amused mockery. The laptop discovery becomes furious. The first Rebinding ends in cold refusal. Only the arrival of the threat begins strategic cooperation. The portal ritual is tense, self-interested and slightly too casual. Sealing returns to cold threats.
+Emotion contrast. The quiet lines ("...Lucky attempt.") must be genuinely quiet so the shouting lands. Record furious lines last in each session.
+Pauses and stage directions. Never spoken. The Awakening pause is two seconds, built into the engine.
+Processing (after recording). Lower pitch by roughly 2 to 4 semitones, a subtle doubled layer an octave lower mixed low, short dark reverb, light saturation on furious lines only. Normalize all lines to the same loudness.
+Technical. Record each line separately in a quiet room with a pop filter. Export WAV, then compress to MP3 or OGG. Sound effects (seals, chains, flicker) are separate files. Always show subtitles on screen as a fallback.
+Lore note. The script uses the Kandarian Demon, Deadites, the Dark Ones, Raymond Knowby and Ash Williams as franchise references. Origins may conflict across continuities, so the book answers vaguely. The portal ritual, the anchor, Dead Sight, Binding Word and Casting-Out are original to this project and are not Evil Dead canon.
+17. Recording priority
+1. Demo path: AW_01 to AW_06, ES_01 to ES_04, the RB1 lines, TN_01 to TN_05, CL_01 to CL_03, one line per ability, UNST_01a to UNST_01e, CRIT_01a to CRIT_01d, BR_01 to BR_03, PT_S1 to PT_S3b, PT_END_a and PT_END_b, SL_01 to SL_07.
+2. Instability pools: STAB, UNST, CRIT and BR lines.
+3. Core Q&A: TH, CO, LO, PT and INS lines.
+4. Easy to add later: RQ lines, the FB pool, HT hints, CL_OFFER, GATE_01 and callbacks.
+Page 17 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 18. Interaction spec (build proposal)
+The script says what the book says. This section says when it speaks, what changes on screen and what happens next. The states and rules are fixed. The gestures and timings are proposals to test.
+18.1 Story states
+1. Dormant: closed book, silent. The player taps to begin.
+2. Awakening: four incantations, one per symbol. Ends with AW_01 .
+3. Free talk: questions answered from sections 2, 3, 10 and 12 until the first escape trigger.
+4. Laptop discovery and escape attempt: automatic, once. Fires on the player's third message, or 60 seconds after AW_06 , whichever comes first.
+5. The Rebinding: opens when Act 4 ends. Three seals. Sets rebound_done .
+6. Refusal phase: the book refuses help. Only lore, sarcasm and fallback lines work.
+Abilities and clues are locked.
+7. The turn: threat_event fires (section 8). Sets threat_event_seen . Abilities, clues and cooperation unlock.
+8. Investigation: the player asks about the Demon and collects clues. Dead Sight reveals the anchor.
+9. Counter-ritual: Dead Sight (anchor), Binding Word (breach and manifestation), Casting-Out (expel).
+10. After the cast-out, then Sealing, then Dormant.
+The Seal button appears only after the cast-out. There is no early-seal path, so the player
+cannot finish the encounter without resolving the main threat.
+18.2 Triggers and screen changes
+       Action
+ How the player triggers it
+   What changes on screen
+ What happens next
+  Ask the book
+ Type a question, or tap one of three suggested prompt chips that change with the story state.
+   Text and subtitles appear as the voice plays. The book's glow pulses while it speaks.
+  Keywords map to a response category. No match plays a fallback from FB_01 to FB_06 .
+   Page 18 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+       Action
+How the player triggers it
+What changes on screen
+What happens next
+      Do the Rebinding
+The ritual ring opens automatically when Act 4 ends. The player traces three glowing glyphs, one at a time.
+Each traced glyph locks, a chain tightens and the book speaks its line for that seal.
+      Discover a clue
+After the turn, ask about the Demon's habits (clue 1), binding and rites (clue 2), or how to expel it (clue 3). Chips offer these topics. If the player does not ask, the book volunteers the clue (section 18.4).
+A page card slides into the Pages tray at the screen edge. Each clue stays readable there.
+18.3 Recovering when stuck
+Idle timers. With no progress on a step for 45 seconds, the book plays HT_01 and the next control glows softly. At 90 seconds it plays HT_02 and highlights the next target. At 150 seconds it plays HT_03 and shows the exact next action as text.
+Seals. After 3 wrong traces on one seal, the correct glyph path is drawn faintly. A wrong trace never resets the whole ritual.
+Ability confusion. A locked ability shows its reason in one line (for example, "Nothing is weak enough yet") and plays its _F or _LOCK line.
+The last seal ends the ritual and sets
+rebound_done . A wrong trace flashes red and repeats that seal only.
+     Sets clue_found . Repeating a clue plays
+CL_REPEAT .
+      Use an ability
+Tap a glyph on the ritual bar. Dead Sight fires at once. Binding Word asks for a tap on the anchor. Casting-Out needs a 3-second hold.
+The glyph lights, the instability ring rises by the cost and the book speaks its PW_ line.
+Results per section 1.2b. Warning at 40, danger at 75, breach at 100.
+     Start the Sealing
+The Seal button appears after the cast- out. There is no menu option to seal earlier.
+The ring opens and the book speaks
+SL_01 .
+Four incantations, then Dormant.
+      Page 19 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ Critical meter. The glyphs grey out with "The binding is too weak." The meter settles by itself, so waiting always works.
+Clues. The Pages tray always shows collected clues. Missing clues appear as blank pages, so the player can see how many remain.
+Audio trouble. Subtitles always display. If audio fails, the experience continues as text. No soft-locks. Every state has a way forward: a hint, a fallback or a wait.
+No external service needed. Everything above runs from the scripted tree and keyword categories. The Vision and anomaly experience is optional.
+18.4 Flexible dialogue, deterministic progression
+The player controls the conversation. The system controls the essential story conditions. The result is a living book with a reliable demo.
+Who controls it What belongs here
+  Layer
+       Flexible dialogue
+The player's words, plus random variants
+Free-text questions in any order, lore, sarcasm, fallbacks, variant choice, memory callbacks, tone
+       Deterministic progression
+The engine
+Story state, gate flags, the turn, unlocks, ability prerequisites, instability numbers, ritual steps, the ending
+     Rules
+1. Words never move the story. Story state changes only through system events: a completed ritual, a flag, a timer or a button tap. No phrase the player types can unlock an ability, skip a gate or end the ritual.
+2. Same state, same outcome. Variants change the wording only. Every run passes through the same states in the same order, so the demo behaves the same each time.
+3. Clues unlock in order. Clue 1 unlocks at the turn, clue 2 after clue 1, clue 3 after clue 2. Dead Sight needs clue 1 and Binding Word needs clue 2.
+4. Every clue has two routes. The player can ask (by keyword or by tapping a chip), or the book volunteers it. If a clue has been unlocked for 60 seconds and not found, the book plays CL_OFFER and then the clue.
+ Page 20 of 21
+
+Necronomicon Ex-Mortis: Final Script Draft v2
+ 5. Early questions never break state. Asking for a later clue too soon plays   and changes nothing.
+6. Memory is decoration, not a gate. Tags such as last_power and asked_about_ash change the wording of callbacks. They never unlock anything.
+7. Ritual steps use controls, not text. Abilities, seals and the Sealing are buttons and traces. They never depend on parsing a typed sentence.
+8. Any AI is confined to the flexible layer. If a language model is added later, it may only write the book's replies. It cannot change state, set a flag or fire an event. The core runs fully without it.
+CL_OFFER [irritated] You are circling the answer. Since you will not ask, I will tell you. GATE_01 [evasive] Not yet. First learn what you are dealing with.
+19. Open items for you
+Confirm or rename the three abilities.
+Confirm the instability numbers: costs of 15, 20 and 30, thresholds of 40 and 75, settling of 1 point every 3 seconds, and the 15-second breach lockout.
+Confirm the turn's fallback timer (3 messages or 90 seconds) and the idle hint timers (45, 90 and 150 seconds).
+Finalize section 18: gestures and the on-screen layout of the ritual bar and Pages tray. Decide how the separate Vision and anomaly concept calls threat_event .
+Decide the ending screen visuals: the two status lines, the lingering ember and the cast-out effect (section 15).
+     GATE_01
+ Page 21 of 21

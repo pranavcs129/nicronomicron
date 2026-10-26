@@ -1,0 +1,535 @@
+/* ==========================================================================
+   NECRONOMICON EX-MORTIS — CORE DESIGN SYSTEM & OCCULT TOKENS
+   Visual Identity: Cinematic, Antique Occult, Near-Black, Charcoal, Crimson,
+   Bronze, Copper, Parchment, and Muted Gold with Organic Linework.
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --bg-abyss: #040101;
+  --bg-charcoal: #0a0404;
+  --bg-slate: #140908;
+  --bg-altar: #1c0d0b;
+  
+  --crimson-core: #c41e12;
+  --crimson-glow: #ff3318;
+  --crimson-dim: #73130c;
+  --crimson-dark: #3a0805;
+  --crimson-blood: rgba(196, 30, 18, 0.45);
+  --crimson-faint: rgba(196, 30, 18, 0.12);
+  
+  --gold-antique: #cbb28d;
+  --gold-bright: #e5cb9f;
+  --gold-dim: #8b7556;
+  --gold-faint: rgba(203, 178, 141, 0.15);
+  
+  --bone-white: #ead9c8;
+  --bone-muted: rgba(234, 217, 200, 0.75);
+  --bone-dim: rgba(234, 217, 200, 0.4);
+  
+  --bronze-dark: #3a2a1a;
+  --bronze-rule: rgba(203, 178, 141, 0.28);
+  
+  /* Instability meter states */
+  --instability-stable: #38b000;
+  --instability-warning: #ffaa00;
+  --instability-critical: #ff2200;
+  --instability-breach: #ff0055;
+
+  /* Typography */
+  --font-serif-title: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --font-serif-body: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-runic: 'MedievalSharp', 'Cinzel', serif;
+
+  /* Transitions & Timing */
+  --transition-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-medium: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s ease-out;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-abyss);
+  color: var(--bone-white);
+  font-family: var(--font-serif-body);
+  user-select: none;
+  position: relative;
+}
+
+/* Fullscreen Viewport Master Container */
+#app-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-abyss);
+}
+
+/* Atmospheric Vignette & Grain Layer */
+.cinema-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(4, 1, 1, 0.75) 85%, rgba(0, 0, 0, 0.95) 100%);
+}
+
+.cinema-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 51;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Screen Base Wrapper */
+.screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
+  transform: scale(1.01);
+  z-index: 10;
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  z-index: 20;
+}
+
+/* Common UI Elements & Headers */
+.occult-emblem {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  color: #ff3b1e;
+  filter: drop-shadow(0 0 8px rgba(255, 59, 30, 0.65));
+  transition: transform 0.6s ease, color 0.4s ease;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.brand-wrapper:hover .occult-emblem {
+  transform: rotate(45deg);
+  color: #ff5535;
+}
+
+.brand-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-family: var(--font-serif-title);
+  font-size: 14px;
+  letter-spacing: 0.36em;
+  font-weight: 600;
+  color: #ead2c0;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  display: block;
+  font-family: var(--font-serif-title);
+  font-size: 9.5px;
+  letter-spacing: 0.44em;
+  color: #ff3b1e;
+  margin-top: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Top Navigation Bar (Shared across awakened screens) */
+.shared-top-nav {
+  position: absolute;
+  top: 32px;
+  left: 44px;
+  right: 44px;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  z-index: 100;
+}
+
+/* ==========================================================================
+   AWAKENED CONTROLS & SIDEBAR LIFECYCLE CONDITIONAL RENDERING
+   The awakened sidebar (#vertical-nav) and controls (#shared-top-nav)
+   must NOT render in Dormant, Opening Video, Black Screen Transition,
+   or Awakening Ritual states. They ONLY render in the AWAKENED state.
+   ========================================================================== */
+#shared-top-nav,
+#vertical-nav {
+  display: none !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease;
+}
+
+body.lifecycle-awakened:not(.screen-rebind):not(.screen-sealing) #shared-top-nav,
+body.lifecycle-awakened:not(.screen-rebind):not(.screen-sealing) #vertical-nav {
+  display: flex !important;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.top-nav-link {
+  font-family: var(--font-serif-title);
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  color: var(--bone-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.top-nav-link:hover {
+  color: var(--bone-white);
+  text-shadow: 0 0 12px rgba(234, 217, 200, 0.4);
+}
+
+.top-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.top-ctrl-btn,
+.shared-top-nav .icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 59, 31, 0.45);
+  background: rgba(14, 4, 3, 0.45);
+  backdrop-filter: blur(6px);
+  color: #ff3b1e;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 59, 31, 0.2);
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.top-ctrl-btn:hover,
+.shared-top-nav .icon-btn:hover {
+  border-color: #ff3b1e;
+  color: #ff6040;
+  box-shadow: 0 0 16px rgba(255, 59, 31, 0.5);
+  transform: scale(1.05);
+}
+
+/* Left Vertical Navigation Bar (Matching Reference Image 2) */
+.vertical-nav {
+  position: absolute;
+  left: 41px;
+  top: 145px;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  z-index: 90;
+}
+
+/* Vertical Connecting Hairline Axis */
+.vertical-nav::before {
+  content: '';
+  position: absolute;
+  left: 21px;
+  top: -15px;
+  bottom: 14px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 59, 31, 0.65) 0%,
+    rgba(255, 59, 31, 0.35) 20%,
+    rgba(190, 160, 125, 0.25) 45%,
+    rgba(190, 160, 125, 0.18) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Axis Ornament Finial (Between brand and nav item 1) */
+.vnav-axis-ornament {
+  position: absolute;
+  left: 9px;
+  top: -65px;
+  width: 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vnav-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+.vnav-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(190, 160, 125, 0.28);
+  background: rgba(14, 4, 3, 0.55);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  color: rgba(190, 160, 125, 0.55);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  flex: none;
+}
+
+.vnav-label {
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  color: rgba(190, 160, 125, 0.55);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.vnav-item:hover .vnav-icon-circle {
+  border-color: rgba(255, 59, 31, 0.6);
+  color: #ff3b1e;
+  box-shadow: 0 0 12px rgba(255, 59, 31, 0.35);
+  transform: scale(1.04);
+}
+
+.vnav-item:hover .vnav-label {
+  color: #ead2c0;
+}
+
+/* Active Item: CONVERSE (Brighter Crimson Treatment) */
+.vnav-item.active .vnav-icon-circle {
+  border: 1.5px solid #ff3b1e;
+  background: rgba(28, 6, 5, 0.7);
+  color: #ff4828;
+  box-shadow: 0 0 16px rgba(255, 59, 31, 0.55), inset 0 0 8px rgba(255, 59, 31, 0.2);
+  transform: scale(1.02);
+}
+
+.vnav-item.active .vnav-label {
+  color: #ff4828;
+  text-shadow: 0 0 12px rgba(255, 59, 31, 0.65);
+  font-weight: 600;
+}
+
+/* Instability Badge / Status Pill */
+.instability-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--bronze-rule);
+  background: rgba(16, 4, 4, 0.6);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.instability-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--instability-stable);
+  box-shadow: 0 0 8px var(--instability-stable);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.instability-text {
+  font-family: var(--font-serif-title);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--bone-dim);
+}
+
+.instability-val {
+  font-family: var(--font-serif-title);
+  font-size: 10px;
+  color: var(--bone-white);
+  font-weight: 600;
+}
+
+/* Interactive Ritual Pill Button */
+.ritual-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 38px;
+  border: 1px solid rgba(255, 51, 24, 0.45);
+  background: rgba(26, 5, 4, 0.7);
+  backdrop-filter: blur(6px);
+  border-radius: 4px;
+  color: var(--bone-white);
+  font-family: var(--font-serif-title);
+  font-size: 13px;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 20px rgba(196, 30, 18, 0.25);
+}
+
+.ritual-button:hover {
+  border-color: var(--crimson-glow);
+  background: rgba(45, 9, 6, 0.85);
+  box-shadow: 0 0 35px rgba(255, 51, 24, 0.55), inset 0 0 15px rgba(255, 51, 24, 0.25);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.ritual-button:active {
+  transform: translateY(0);
+}
+
+/* Modal Windows & Drawers */
+.occult-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 1, 1, 0.82);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.occult-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.occult-modal-card {
+  position: relative;
+  width: min(720px, 90vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 20%, #1a0806 0%, #0c0303 70%, #060101 100%);
+  border: 1px solid var(--bronze-rule);
+  padding: 44px;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.9), 0 0 30px var(--crimson-blood);
+  border-radius: 4px;
+}
+
+.occult-modal-card::-webkit-scrollbar {
+  width: 5px;
+}
+.occult-modal-card::-webkit-scrollbar-thumb {
+  background: var(--crimson-dim);
+  border-radius: 4px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: var(--bone-dim);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--crimson-glow);
+}
+
+/* Animations */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes glitchFlicker {
+  0% { transform: translate(0, 0); filter: hue-rotate(0deg); }
+  10% { transform: translate(-2px, 1px); filter: hue-rotate(15deg); }
+  20% { transform: translate(2px, -1px); }
+  30% { transform: translate(-1px, 2px); }
+  40% { transform: translate(1px, -2px); filter: hue-rotate(-15deg); }
+  50% { transform: translate(-2px, 0px); }
+  60% { transform: translate(2px, 2px); }
+  70% { transform: translate(0, 0); filter: hue-rotate(0deg); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Glitch classes applied when Instability is Warning/Critical */
+body.instability-warning .cinema-vignette {
+  background: radial-gradient(circle at 50% 50%, transparent 35%, rgba(30, 4, 3, 0.6) 80%, rgba(4, 1, 1, 0.98) 100%);
+}
+
+body.instability-critical #app-viewport {
+  animation: glitchFlicker 0.4s infinite;
+}
+
+body.instability-breach {
+  filter: contrast(1.2) brightness(0.9);
+}

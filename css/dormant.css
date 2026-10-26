@@ -1,0 +1,408 @@
+/* ==========================================================================
+   SCREEN 1: DORMANT STATE — CSS SPECIFICATION
+   Visual Reference: dormant state_Necronomicon(2).png
+   ========================================================================== */
+
+#screen-dormant {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Background Layer: Real photograph of altar with closed book */
+.dormant-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../assets/background_dormant.png') center center / cover no-repeat;
+  filter: brightness(0.92) contrast(1.05);
+  z-index: 1;
+}
+
+/* Overlay UI Container */
+.dormant-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 56px;
+  pointer-events: auto;
+}
+
+/* Left Introductory Typography */
+.dormant-intro {
+  position: absolute;
+  left: 64px;
+  top: 52%;
+  transform: translateY(-50%);
+  max-width: 440px;
+  z-index: 20;
+}
+
+.dormant-pretitle {
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.dormant-title {
+  font-family: var(--font-serif-title);
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  color: var(--bone-white);
+  line-height: 1.25;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+}
+
+.dormant-crimson-rule {
+  width: 52px;
+  height: 1.5px;
+  background: var(--crimson-core);
+  margin: 24px 0 22px 0;
+  box-shadow: 0 0 10px var(--crimson-glow);
+}
+
+.dormant-subtitle {
+  font-family: var(--font-serif-title);
+  font-size: 11.5px;
+  letter-spacing: 0.35em;
+  color: var(--bone-dim);
+  line-height: 1.85;
+  text-transform: uppercase;
+}
+
+/* Center Lower Action Area: Open The Book Button & Occult Ornament */
+.dormant-action-area {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100vh * (119 / 941));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 412px;
+  height: 64px;
+  z-index: 25;
+}
+
+@media (max-height: 800px) {
+  .dormant-action-area {
+    bottom: 84px;
+  }
+}
+
+/* Occult Ritual Diagram partially obscured behind button */
+.dormant-ritual-circle-ornament {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  pointer-events: none;
+  z-index: 1;
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+.rc-line {
+  stroke: #c4301c;
+  stroke-width: 0.85px;
+  fill: none;
+  transition: stroke 0.4s ease, filter 0.4s ease;
+}
+
+.rc-outer {
+  stroke-width: 1.0px;
+  opacity: 0.78;
+}
+
+.rc-middle {
+  stroke-width: 0.85px;
+  opacity: 0.65;
+}
+
+.rc-inner {
+  stroke: #df4424;
+  stroke-width: 0.9px;
+  opacity: 0.72;
+}
+
+.rc-core,
+.rc-dot {
+  stroke: #c4301c;
+  opacity: 0.55;
+}
+
+.rc-fill {
+  fill: #df4826;
+  opacity: 0.85;
+  transition: fill 0.4s ease;
+}
+
+.rc-chevron {
+  stroke: #df4826;
+  stroke-width: 1.4px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+  transition: filter 0.4s ease, stroke 0.4s ease;
+}
+
+/* Hover intensification on ritual circle */
+.dormant-action-area:hover .dormant-ritual-circle-ornament {
+  filter: drop-shadow(0 0 8px rgba(223, 68, 36, 0.65));
+}
+
+.dormant-action-area:hover .rc-chevron {
+  stroke: #ff5e36;
+  filter: drop-shadow(0 0 6px rgba(255, 94, 54, 0.8));
+}
+
+/* The Open The Book Button Component */
+.btn-open-book {
+  position: relative;
+  z-index: 2;
+  width: 412px;
+  height: 64px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.4s ease;
+}
+
+.btn-frame-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.btn-path-bg {
+  transition: fill 0.4s ease;
+}
+
+.btn-path-outer {
+  transition: stroke 0.4s ease, filter 0.4s ease;
+}
+
+.btn-path-inner {
+  transition: stroke 0.4s ease;
+}
+
+/* Typography */
+.btn-open-book-text {
+  position: relative;
+  z-index: 3;
+  font-family: var(--font-serif-title);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.46em;
+  color: #ede3d2;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(255, 180, 140, 0.28), 0 1px 2px rgba(0, 0, 0, 0.95);
+  padding-left: 0.46em; /* Optical centering compensation for letter-spacing */
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+
+/* Hover & Focus Interactions */
+.btn-open-book:hover .btn-path-outer {
+  filter: drop-shadow(0 0 6px rgba(255, 84, 46, 0.85));
+}
+
+.btn-open-book:hover .btn-path-inner {
+  stroke: rgba(255, 100, 60, 0.65);
+}
+
+.btn-open-book:hover .btn-open-book-text {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255, 200, 160, 0.5), 0 0 24px rgba(220, 60, 30, 0.4), 0 1px 2px rgba(0, 0, 0, 0.95);
+}
+
+.btn-open-book:focus-visible {
+  outline: 1px solid var(--crimson-glow);
+  outline-offset: 4px;
+}
+
+.btn-open-book:disabled,
+.btn-open-book[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Bottom and Side Accents */
+.dormant-footer-left {
+  position: absolute;
+  bottom: 36px;
+  left: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-serif-title);
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: var(--bone-dim);
+  z-index: 20;
+}
+
+.dormant-arrow-rule {
+  width: 48px;
+  height: 1px;
+  background: var(--bronze-rule);
+  position: relative;
+}
+
+.dormant-arrow-rule::after {
+  content: '>';
+  position: absolute;
+  right: -5px;
+  top: -6px;
+  font-size: 9px;
+  color: var(--gold-dim);
+}
+
+.dormant-footer-right {
+  position: absolute;
+  bottom: 36px;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 20;
+}
+
+.side-ruler-left {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.side-ruler-right {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   CINEMATIC OPENING VIDEO ANIMATION OVERLAY
+   ========================================================================== */
+.cinematic-video-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 150;
+  background-color: #040101;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cinematic-video-overlay.playing {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cinematic-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.08) brightness(0.95);
+}
+
+.cinematic-skip-btn {
+  position: absolute;
+  bottom: 36px;
+  right: 52px;
+  background: rgba(14, 4, 3, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--bronze-rule);
+  color: var(--bone-dim);
+  font-family: var(--font-serif-title);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 160;
+  transition: all 0.3s ease;
+}
+
+.cinematic-skip-btn:hover {
+  border-color: var(--crimson-glow);
+  color: #fff;
+  box-shadow: 0 0 16px var(--crimson-blood);
+  transform: scale(1.05);
+}
+
+.cinematic-skip-btn.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* ==========================================================================
+   PURE BLACK SCREEN TRANSITION CURTAIN
+   Transitions smoothly to pure black on video end, pauses, then reveals Awakening Ritual
+   ========================================================================== */
+.opening-black-curtain {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  z-index: 500;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.opening-black-curtain.active {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.opening-black-curtain.fade-to-black {
+  opacity: 1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.opening-black-curtain.fade-to-awakening {
+  opacity: 0;
+  transition: opacity 600ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+

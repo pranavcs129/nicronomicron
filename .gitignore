@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+scratch/
+
+# Unused/duplicate extracted frame folders
+assets/main ui/awakning ritual/Ritual_circle_glowing_in_darkness_20261020112251_20261025_000659/
+assets/main ui/dormant state/opening_animation_20261024_191534/
+assets/main ui/sealing ritual/sealing_ritual_20261025_003823/
