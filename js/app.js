@@ -63,6 +63,16 @@ class NecronomiconApp {
       state.setScreen('awakened');
       state.setActiveNav('converse');
       this.renderState(state);
+    } else if (targetScreen === 'rebind') {
+      state.flags.awakened = true;
+      state.setLifecycle('rebind');
+      state.setScreen('rebind');
+      this.rituals.initRebind();
+    } else if (targetScreen === 'sealing') {
+      state.flags.awakened = true;
+      state.setLifecycle('sealing');
+      state.setScreen('sealing');
+      this.rituals.initSealing();
     } else {
       this.renderState(state);
     }
@@ -118,6 +128,11 @@ class NecronomiconApp {
       const el = document.getElementById(`screen-${sc}`);
       if (el) el.classList.toggle('active', s.screen === sc);
     });
+
+    // Ensure Awakening UI is up-to-date when the screen becomes visible
+    if (s.screen === 'awakening' && prevScreen !== 'awakening') {
+      this.rituals.updateAwakeningUI();
+    }
 
     if (s.screen === 'rebind' && prevScreen !== 'rebind') {
       this.rituals.initRebind();

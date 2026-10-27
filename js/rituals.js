@@ -116,6 +116,32 @@ export class RitualManager {
       state.setAwakeningState('awaiting_damnora');
     }
 
+    // Eagerly preload the initial background image so the scene is ready
+    // before the screen becomes visible (prevents blank/black screen on entry)
+    const bg = document.getElementById('awakening-bg');
+    if (bg) {
+      const initialBgUrl = 'assets/main ui/awakning ritual/0%.png';
+      const preloadImg = new Image();
+      preloadImg.onload = () => {
+        // Only set if still at phase 0 to avoid overwriting a later phase
+        if (state.awakeningPhase === 0) {
+          bg.style.backgroundImage = `url('${initialBgUrl}')`;
+          bg.style.backgroundSize = 'cover';
+          bg.style.backgroundPosition = 'center center';
+          bg.style.backgroundRepeat = 'no-repeat';
+        }
+      };
+      preloadImg.src = initialBgUrl;
+
+      // Also set immediately (image may already be cached from <link rel="preload">)
+      if (state.awakeningPhase === 0) {
+        bg.style.backgroundImage = `url('${initialBgUrl}')`;
+        bg.style.backgroundSize = 'cover';
+        bg.style.backgroundPosition = 'center center';
+        bg.style.backgroundRepeat = 'no-repeat';
+      }
+    }
+
     if (this.video) {
       this.video.muted = true;
       this.video.playsInline = true;
@@ -441,7 +467,11 @@ export class RitualManager {
     if (bg) {
       const pcts = ['0%', '25%', '50%', '75%', '100%'];
       const pct = pcts[phase] || '100%';
-      bg.style.backgroundImage = `url('assets/main ui/awakning ritual/${pct}.png')`;
+      const bgUrl = `assets/main ui/awakning ritual/${pct}.png`;
+      bg.style.backgroundImage = `url('${bgUrl}')`;
+      bg.style.backgroundSize = 'cover';
+      bg.style.backgroundPosition = 'center center';
+      bg.style.backgroundRepeat = 'no-repeat';
     }
 
     const rows = document.querySelectorAll('.ritual-phase-row');
