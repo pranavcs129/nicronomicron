@@ -138,13 +138,13 @@ class NecronomiconApp {
     if (s.screen === 'rebind' && prevScreen !== 'rebind') {
       this.rituals.initRebind();
     } else if (prevScreen === 'rebind' && s.screen !== 'rebind') {
-      this.rituals.stopRebindAnimation();
+      this.rituals.cleanupRebind();
     }
 
     if (s.screen === 'sealing' && prevScreen !== 'sealing') {
       this.rituals.initSealing();
     } else if (prevScreen === 'sealing' && s.screen !== 'sealing') {
-      this.rituals.stopSealingAnimation();
+      this.rituals.cleanupSealing();
     }
 
     if (s.screen === 'awakened' && this.model && this.model.resize) {
@@ -655,6 +655,7 @@ class NecronomiconApp {
   bindRebindEvents() {
     const form = document.getElementById('rebind-form');
     const input = document.getElementById('rebind-input');
+    const submitBtn = document.getElementById('rebind-submit-btn');
     const mic = document.getElementById('rebind-mic');
     const btnTrigger = document.getElementById('btn-trigger-rebind');
 
@@ -664,11 +665,20 @@ class NecronomiconApp {
       });
     }
 
+    const handleRebindSubmit = (e) => {
+      if (e) e.preventDefault();
+      const val = input ? input.value : '';
+      this.rituals.submitRebind(val);
+    };
+
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', handleRebindSubmit);
+    }
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const val = input ? input.value : '';
-        this.rituals.submitRebind(val);
+        handleRebindSubmit(e);
       });
     }
 
@@ -682,11 +692,22 @@ class NecronomiconApp {
   bindSealingEvents() {
     const form = document.getElementById('sealing-form');
     const input = document.getElementById('sealing-input');
+    const submitBtn = document.getElementById('sealing-submit-btn');
+
+    const handleSealingSubmit = (e) => {
+      if (e) e.preventDefault();
+      const val = input ? input.value : '';
+      this.rituals.submitSealingIncantation(val);
+    };
+
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', handleSealingSubmit);
+    }
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const val = input ? input.value : '';
-        this.rituals.submitSealingIncantation(val);
+        handleSealingSubmit(e);
       });
     }
   }

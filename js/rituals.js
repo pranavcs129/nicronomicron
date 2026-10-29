@@ -84,12 +84,26 @@ export class RitualManager {
     this.rebindStage = 0;
     this.currentRebindFrame = 1;
     this.rebindFrameCache = new Map();
+    this.rebindPendingLoads = new Map();
+    this.rebindFailedFrames = new Set();
+    this.lastDrawnRebindFrame = null;
     this.rebindAnimRafId = null;
+    this.isRebindingProcessing = false;
+
     this.sealingStage = 0;
     this.currentSealingFrame = 1;
     this.sealingFrameCache = new Map();
+    this.sealingPendingLoads = new Map();
+    this.sealingFailedFrames = new Set();
+    this.lastDrawnSealingFrame = null;
     this.sealingAnimRafId = null;
     this.isSealingProcessing = false;
+
+    // Eagerly preload Frame 1 for both rituals in the background after page load
+    setTimeout(() => {
+      this.loadRebindFrame(1).catch(() => {});
+      this.loadSealingFrame(1).catch(() => {});
+    }, 1200);
   }
 
   // ------------------------------------------------------------------------
@@ -570,36 +584,56 @@ export class RitualManager {
     if (this.rebindFrameCache.has(num)) {
       return this.rebindFrameCache.get(num);
     }
-    return new Promise((resolve) => {
+    if (this.rebindPendingLoads.has(num)) {
+      return this.rebindPendingLoads.get(num);
+    }
+
+    const promise = new Promise((resolve) => {
       const img = new Image();
+      const url = this.getRebindFrameUrl(num);
       img.onload = () => {
-        this.rebindFrameCache.set(num, img);
+        if (state.screen === 'rebind' || num === 1) {
+          this.rebindFrameCache.set(num, img);
+        }
+        this.rebindPendingLoads.delete(num);
         resolve(img);
+        if (img.decode) {
+          img.decode().catch(() => {});
+        }
       };
       img.onerror = (err) => {
-        console.warn(`Failed to load rebind frame ${num}:`, err);
+        console.error(`Failed to load rebind frame ${num}: ${url}`, err);
+        this.rebindFailedFrames.add(num);
+        this.rebindPendingLoads.delete(num);
         resolve(null);
       };
-      img.src = this.getRebindFrameUrl(num);
+      img.src = url;
     });
+
+    this.rebindPendingLoads.set(num, promise);
+    return promise;
   }
 
   drawRebindFrame(frameNum) {
+    if (this.lastDrawnRebindFrame === frameNum) return;
     const canvas = document.getElementById('rebind-anim-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const img = this.rebindFrameCache.get(frameNum);
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      this.lastDrawnRebindFrame = frameNum;
     }
   }
 
   async preloadRebindRange(start, end) {
-    const concurrency = 2;
+    const concurrency = 3;
     const queue = [];
     for (let i = start; i <= end; i++) {
-      if (!this.rebindFrameCache.has(i)) {
+      if (!this.rebindFrameCache.has(i) && !this.rebindPendingLoads.has(i) && !this.rebindFailedFrames.has(i)) {
         queue.push(i);
       }
     }
@@ -626,9 +660,11 @@ export class RitualManager {
     this.currentRebindFrame = current;
     this.drawRebindFrame(current);
 
+    // Queue active segment frames in sequential order with top priority
+    this.preloadRebindRange(startFrame, endFrame);
+
     const frameDuration = 1000 / RITUAL_FPS;
-    let lastTime = performance.now();
-    let accumulator = 0;
+    let lastFrameTime = performance.now();
 
     const step = (now) => {
       if (state.screen !== 'rebind') {
@@ -637,28 +673,40 @@ export class RitualManager {
         return;
       }
 
-      const delta = Math.min(100, now - lastTime);
-      lastTime = now;
-      accumulator += delta;
-
-      let advanced = false;
-      while (accumulator >= frameDuration && current < endFrame) {
-        accumulator -= frameDuration;
-        current++;
-        advanced = true;
-      }
-
-      if (advanced) {
-        this.currentRebindFrame = current;
-        this.drawRebindFrame(current);
-      }
-
       if (current >= endFrame) {
         this.currentRebindFrame = endFrame;
         this.drawRebindFrame(endFrame);
         this.rebindAnimRafId = null;
         if (onComplete) onComplete();
         return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed >= frameDuration) {
+        const nextFrame = current + 1;
+        const nextImg = this.rebindFrameCache.get(nextFrame);
+        const isFailed = this.rebindFailedFrames.has(nextFrame);
+
+        if (nextImg && nextImg.complete && nextImg.naturalWidth > 0) {
+          current = nextFrame;
+          this.currentRebindFrame = current;
+          this.drawRebindFrame(current);
+          lastFrameTime = now - (elapsed % frameDuration);
+
+          // Free past frames to conserve memory
+          if (current > startFrame + 6) {
+            for (let f = startFrame; f < current - 5; f++) {
+              this.rebindFrameCache.delete(f);
+            }
+          }
+        } else if (isFailed) {
+          console.error(`Skipping failed rebind frame ${nextFrame} to prevent ritual deadlock`);
+          current = nextFrame;
+          lastFrameTime = now;
+        } else {
+          // Frame not yet ready, hold current frame
+          lastFrameTime = now;
+        }
       }
 
       this.rebindAnimRafId = requestAnimationFrame(step);
@@ -674,6 +722,21 @@ export class RitualManager {
     }
     this.stopRebindSparks();
     this.isRebindingProcessing = false;
+    this.lastDrawnRebindFrame = null;
+  }
+
+  cleanupRebind() {
+    this.stopRebindAnimation();
+    if (this.rebindRecognition && this.isRebindListening) {
+      try { this.rebindRecognition.stop(); } catch (_) {}
+      this.isRebindListening = false;
+    }
+    this.rebindFrameCache.clear();
+    this.rebindPendingLoads.clear();
+    this.rebindFailedFrames.clear();
+    this.lastDrawnRebindFrame = null;
+    this.rebindIntroPlayed = false;
+    this.rebindStage = 0;
   }
 
   async initRebind() {
@@ -694,15 +757,17 @@ export class RitualManager {
 
     this.rebindStage = 0;
     this.currentRebindFrame = 1;
-    this.isRebindingProcessing = true; // wait until frame 1 is visible
+    this.lastDrawnRebindFrame = null;
+    this.isRebindingProcessing = false;
 
     if (symbolDisplay) {
       symbolDisplay.innerHTML = renderSpellSymbols('REVORA');
     }
     if (input) {
       input.value = '';
-      input.disabled = true;
+      input.disabled = false;
       input.placeholder = 'Type deciphered incantation…';
+      setTimeout(() => input.focus(), 50);
     }
     if (feedback) {
       feedback.textContent = '';
@@ -713,24 +778,19 @@ export class RitualManager {
       voice.classList.remove('visible');
     }
 
-    // Load and display Frame 1 only
-    await this.loadRebindFrame(1);
-    this.drawRebindFrame(1);
-
-    // Frame 1 is now visible; ritual waits for the user to enter the first spell
-    this.isRebindingProcessing = false;
-    if (input) {
-      input.disabled = false;
-      setTimeout(() => input.focus(), 250);
-    }
-
-    // Preload stage 1 frames (2 through 43) in the background
-    this.preloadRebindRange(2, 43);
-
     // Play ritual ambience and start canvas sparks
     audio.playSubRumble(2.0);
     audio.playRitualChime(0.6);
     this.startRebindSparks();
+
+    // Load and display Frame 1 immediately
+    const f1 = await this.loadRebindFrame(1);
+    if (f1 && state.screen === 'rebind' && this.rebindStage === 0 && !this.isRebindingProcessing) {
+      this.drawRebindFrame(1);
+    }
+
+    // Preload stage 1 frames (2 through 43) progressively in background
+    this.preloadRebindRange(2, 43);
 
     // Play introductory character line once per entry
     if (!this.rebindIntroPlayed) {
@@ -808,12 +868,6 @@ export class RitualManager {
         feedback.classList.add('visible');
       }
 
-      // Preload next segment in background while playing
-      this.preloadRebindRange(44, 108);
-
-      // Ensure frames 1-43 are fully ready
-      await this.preloadRebindRange(1, 43);
-
       this.playRebindSequence(1, 43, () => {
         this.rebindStage = 1;
         this.isRebindingProcessing = false;
@@ -830,6 +884,8 @@ export class RitualManager {
           input.disabled = false;
           input.focus();
         }
+        // Preload next segment while user reads glyphs and types REDIYUS
+        this.preloadRebindRange(44, 108);
       });
 
     } else if (this.rebindStage === 1) {
@@ -839,12 +895,6 @@ export class RitualManager {
         feedback.classList.remove('error');
         feedback.classList.add('visible');
       }
-
-      // Preload next segment in background while playing
-      this.preloadRebindRange(109, 192);
-
-      // Ensure frames 43-108 are fully ready
-      await this.preloadRebindRange(43, 108);
 
       this.playRebindSequence(43, 108, () => {
         this.rebindStage = 2;
@@ -862,6 +912,8 @@ export class RitualManager {
           input.disabled = false;
           input.focus();
         }
+        // Preload final segment while user reads glyphs and types REVENANT
+        this.preloadRebindRange(109, 192);
       });
 
     } else if (this.rebindStage === 2) {
@@ -873,9 +925,6 @@ export class RitualManager {
       }
 
       audio.playSubRumble(2.5);
-
-      // Ensure frames 108-192 are fully ready
-      await this.preloadRebindRange(108, 192);
 
       this.playRebindSequence(108, 192, async () => {
         // Complete Rebinding Ritual on frame 192
@@ -1079,36 +1128,56 @@ export class RitualManager {
     if (this.sealingFrameCache.has(num)) {
       return this.sealingFrameCache.get(num);
     }
-    return new Promise((resolve) => {
+    if (this.sealingPendingLoads.has(num)) {
+      return this.sealingPendingLoads.get(num);
+    }
+
+    const promise = new Promise((resolve) => {
       const img = new Image();
+      const url = this.getSealingFrameUrl(num);
       img.onload = () => {
-        this.sealingFrameCache.set(num, img);
+        if (state.screen === 'sealing' || num === 1) {
+          this.sealingFrameCache.set(num, img);
+        }
+        this.sealingPendingLoads.delete(num);
         resolve(img);
+        if (img.decode) {
+          img.decode().catch(() => {});
+        }
       };
       img.onerror = (err) => {
-        console.warn(`Failed to load sealing frame ${num}:`, err);
+        console.error(`Failed to load sealing frame ${num}: ${url}`, err);
+        this.sealingFailedFrames.add(num);
+        this.sealingPendingLoads.delete(num);
         resolve(null);
       };
-      img.src = this.getSealingFrameUrl(num);
+      img.src = url;
     });
+
+    this.sealingPendingLoads.set(num, promise);
+    return promise;
   }
 
   drawSealingFrame(frameNum) {
+    if (this.lastDrawnSealingFrame === frameNum) return;
     const canvas = document.getElementById('sealing-anim-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const img = this.sealingFrameCache.get(frameNum);
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      this.lastDrawnSealingFrame = frameNum;
     }
   }
 
   async preloadSealingRange(start, end) {
-    const concurrency = 2;
+    const concurrency = 3;
     const queue = [];
     for (let i = start; i <= end; i++) {
-      if (!this.sealingFrameCache.has(i)) {
+      if (!this.sealingFrameCache.has(i) && !this.sealingPendingLoads.has(i) && !this.sealingFailedFrames.has(i)) {
         queue.push(i);
       }
     }
@@ -1135,9 +1204,11 @@ export class RitualManager {
     this.currentSealingFrame = current;
     this.drawSealingFrame(current);
 
+    // Queue active segment frames in sequential order with top priority
+    this.preloadSealingRange(startFrame, endFrame);
+
     const frameDuration = 1000 / RITUAL_FPS;
-    let lastTime = performance.now();
-    let accumulator = 0;
+    let lastFrameTime = performance.now();
 
     const step = (now) => {
       if (state.screen !== 'sealing') {
@@ -1146,28 +1217,40 @@ export class RitualManager {
         return;
       }
 
-      const delta = Math.min(100, now - lastTime);
-      lastTime = now;
-      accumulator += delta;
-
-      let advanced = false;
-      while (accumulator >= frameDuration && current < endFrame) {
-        accumulator -= frameDuration;
-        current++;
-        advanced = true;
-      }
-
-      if (advanced) {
-        this.currentSealingFrame = current;
-        this.drawSealingFrame(current);
-      }
-
       if (current >= endFrame) {
         this.currentSealingFrame = endFrame;
         this.drawSealingFrame(endFrame);
         this.sealingAnimRafId = null;
         if (onComplete) onComplete();
         return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed >= frameDuration) {
+        const nextFrame = current + 1;
+        const nextImg = this.sealingFrameCache.get(nextFrame);
+        const isFailed = this.sealingFailedFrames.has(nextFrame);
+
+        if (nextImg && nextImg.complete && nextImg.naturalWidth > 0) {
+          current = nextFrame;
+          this.currentSealingFrame = current;
+          this.drawSealingFrame(current);
+          lastFrameTime = now - (elapsed % frameDuration);
+
+          // Free past frames to conserve memory
+          if (current > startFrame + 6) {
+            for (let f = startFrame; f < current - 5; f++) {
+              this.sealingFrameCache.delete(f);
+            }
+          }
+        } else if (isFailed) {
+          console.error(`Skipping failed sealing frame ${nextFrame} to prevent ritual deadlock`);
+          current = nextFrame;
+          lastFrameTime = now;
+        } else {
+          // Frame not yet ready, hold current frame
+          lastFrameTime = now;
+        }
       }
 
       this.sealingAnimRafId = requestAnimationFrame(step);
@@ -1182,6 +1265,16 @@ export class RitualManager {
       this.sealingAnimRafId = null;
     }
     this.isSealingProcessing = false;
+    this.lastDrawnSealingFrame = null;
+  }
+
+  cleanupSealing() {
+    this.stopSealingAnimation();
+    this.sealingFrameCache.clear();
+    this.sealingPendingLoads.clear();
+    this.sealingFailedFrames.clear();
+    this.lastDrawnSealingFrame = null;
+    this.sealingStage = 0;
   }
 
   updateSealingStepNodes() {
@@ -1212,15 +1305,17 @@ export class RitualManager {
     this.sealingStage = 0;
     state.sealingPhase = 0;
     this.currentSealingFrame = 1;
-    this.isSealingProcessing = true; // wait until frame 1 is visible
+    this.lastDrawnSealingFrame = null;
+    this.isSealingProcessing = false;
 
     if (symbolDisplay) {
       symbolDisplay.innerHTML = renderSpellSymbols('OBSIGNUM');
     }
     if (input) {
       input.value = '';
-      input.disabled = true;
+      input.disabled = false;
       input.placeholder = 'Type deciphered incantation…';
+      setTimeout(() => input.focus(), 50);
     }
     if (feedback) {
       feedback.textContent = '';
@@ -1232,22 +1327,17 @@ export class RitualManager {
 
     this.updateSealingStepNodes();
 
-    // Load and display Frame 1 only
-    await this.loadSealingFrame(1);
-    this.drawSealingFrame(1);
-
-    // Frame 1 is now visible; ritual waits for user to enter first spell
-    this.isSealingProcessing = false;
-    if (input) {
-      input.disabled = false;
-      setTimeout(() => input.focus(), 250);
-    }
-
-    // Preload stage 1 frames (2 through 55) in background
-    this.preloadSealingRange(2, 55);
-
     audio.playSubRumble(2.0);
     audio.playRitualChime(0.6);
+
+    // Load and display Frame 1 immediately
+    const f1 = await this.loadSealingFrame(1);
+    if (f1 && state.screen === 'sealing' && this.sealingStage === 0 && !this.isSealingProcessing) {
+      this.drawSealingFrame(1);
+    }
+
+    // Preload stage 1 frames (2 through 55) progressively in background
+    this.preloadSealingRange(2, 55);
   }
 
   async submitSealingIncantation(text) {
@@ -1308,12 +1398,6 @@ export class RitualManager {
         feedback.classList.add('visible');
       }
 
-      // Preload next range in background
-      this.preloadSealingRange(56, 113);
-
-      // Ensure frames 1-55 ready
-      await this.preloadSealingRange(1, 55);
-
       this.playSealingSequence(1, 55, () => {
         this.sealingStage = 1;
         state.sealingPhase = 1;
@@ -1332,6 +1416,8 @@ export class RitualManager {
           input.disabled = false;
           input.focus();
         }
+        // Preload next range while user types CLAUDE
+        this.preloadSealingRange(56, 113);
       });
 
     } else if (this.sealingStage === 1) {
@@ -1341,12 +1427,6 @@ export class RitualManager {
         feedback.classList.remove('error');
         feedback.classList.add('visible');
       }
-
-      // Preload next range in background
-      this.preloadSealingRange(114, 133);
-
-      // Ensure frames 55-113 ready
-      await this.preloadSealingRange(55, 113);
 
       this.playSealingSequence(55, 113, () => {
         this.sealingStage = 2;
@@ -1366,6 +1446,8 @@ export class RitualManager {
           input.disabled = false;
           input.focus();
         }
+        // Preload next range while user types VELSIGIL
+        this.preloadSealingRange(114, 133);
       });
 
     } else if (this.sealingStage === 2) {
@@ -1375,12 +1457,6 @@ export class RitualManager {
         feedback.classList.remove('error');
         feedback.classList.add('visible');
       }
-
-      // Preload next range in background
-      this.preloadSealingRange(134, 192);
-
-      // Ensure frames 113-133 ready
-      await this.preloadSealingRange(113, 133);
 
       this.playSealingSequence(113, 133, () => {
         this.sealingStage = 3;
@@ -1400,6 +1476,8 @@ export class RitualManager {
           input.disabled = false;
           input.focus();
         }
+        // Preload final range while user types MORTIGIL
+        this.preloadSealingRange(134, 192);
       });
 
     } else if (this.sealingStage === 3) {
@@ -1409,9 +1487,6 @@ export class RitualManager {
         feedback.classList.remove('error');
         feedback.classList.add('visible');
       }
-
-      // Ensure frames 133-192 ready
-      await this.preloadSealingRange(133, 192);
 
       this.playSealingSequence(133, 192, async () => {
         // Hold final frame 192
