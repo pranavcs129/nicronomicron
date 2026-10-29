@@ -120,7 +120,8 @@ export class RitualManager {
     // before the screen becomes visible (prevents blank/black screen on entry)
     const bg = document.getElementById('awakening-bg');
     if (bg) {
-      const initialBgUrl = 'assets/main ui/awakning ritual/25%.png';
+      const initialBgUrl = 'assets/main%20ui/awakning%20ritual/25%25.png';
+      const unencodedBgUrl = 'assets/main ui/awakning ritual/25%.png';
       const preloadImg = new Image();
       preloadImg.onload = () => {
         // Only set if still at phase 0 to avoid overwriting a later phase
@@ -130,6 +131,20 @@ export class RitualManager {
           bg.style.backgroundPosition = 'center center';
           bg.style.backgroundRepeat = 'no-repeat';
         }
+      };
+      preloadImg.onerror = (err) => {
+        console.error('Failed to load Awakening background image at ' + initialBgUrl, err);
+        // Fallback to unencoded path if web server prefers unencoded spaces
+        const fallbackImg = new Image();
+        fallbackImg.onload = () => {
+          if (state.awakeningPhase === 0) {
+            bg.style.backgroundImage = `url('${unencodedBgUrl}')`;
+          }
+        };
+        fallbackImg.onerror = (fallbackErr) => {
+          console.error('Failed to load fallback Awakening background image at ' + unencodedBgUrl, fallbackErr);
+        };
+        fallbackImg.src = unencodedBgUrl;
       };
       preloadImg.src = initialBgUrl;
 
@@ -153,13 +168,21 @@ export class RitualManager {
           if (Math.abs(this.video.currentTime - initialTime) > 0.05) {
             this.video.currentTime = initialTime;
           }
+          // Make video active and visible immediately on page entry,
+          // ensuring the central ritual scene does not depend on the spell-submission handler
+          this.video.classList.add('active-playback');
         }
+      };
+
+      this.video.onerror = (err) => {
+        console.error('Failed to load Awakening ritual video asset:', this.video.currentSrc || this.video.src, err);
       };
 
       if (this.video.readyState >= 1) {
         prepareInitialFrame();
       } else {
         this.video.addEventListener('loadedmetadata', prepareInitialFrame, { once: true });
+        this.video.addEventListener('canplay', prepareInitialFrame, { once: true });
         this.video.load();
       }
     }
@@ -467,11 +490,20 @@ export class RitualManager {
     if (bg) {
       const pcts = ['25%', '50%', '75%', '100%'];
       const pct = pcts[phase] || '25%';
-      const bgUrl = `assets/main ui/awakning ritual/${pct}.png`;
+      const encodedPct = pct.replace('%', '%25');
+      const bgUrl = `assets/main%20ui/awakning%20ritual/${encodedPct}.png`;
       bg.style.backgroundImage = `url('${bgUrl}')`;
       bg.style.backgroundSize = 'cover';
       bg.style.backgroundPosition = 'center center';
       bg.style.backgroundRepeat = 'no-repeat';
+
+      const verifyImg = new Image();
+      verifyImg.onerror = () => {
+        console.error(`Failed to load Awakening background for phase ${phase} (${pct}) at: ${bgUrl}`);
+        const fallbackUrl = `assets/main ui/awakning ritual/${pct}.png`;
+        bg.style.backgroundImage = `url('${fallbackUrl}')`;
+      };
+      verifyImg.src = bgUrl;
     }
 
     const rows = document.querySelectorAll('.ritual-phase-row');

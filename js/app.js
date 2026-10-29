@@ -131,6 +131,7 @@ class NecronomiconApp {
 
     // Ensure Awakening UI is up-to-date when the screen becomes visible
     if (s.screen === 'awakening' && prevScreen !== 'awakening') {
+      this.rituals.initAwakening();
       this.rituals.updateAwakeningUI();
     }
 
