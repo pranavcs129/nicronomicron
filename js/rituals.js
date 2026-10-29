@@ -120,8 +120,8 @@ export class RitualManager {
     // before the screen becomes visible (prevents blank/black screen on entry)
     const bg = document.getElementById('awakening-bg');
     if (bg) {
-      const initialBgUrl = 'assets/main%20ui/awakning%20ritual/25%25.png';
-      const unencodedBgUrl = 'assets/main ui/awakning ritual/25%.png';
+      const initialBgUrl = 'assets/main%20ui/awakning%20ritual/0%25.png';
+      const unencodedBgUrl = 'assets/main ui/awakning ritual/0%.png';
       const preloadImg = new Image();
       preloadImg.onload = () => {
         // Only set if still at phase 0 to avoid overwriting a later phase
@@ -168,9 +168,8 @@ export class RitualManager {
           if (Math.abs(this.video.currentTime - initialTime) > 0.05) {
             this.video.currentTime = initialTime;
           }
-          // Make video active and visible immediately on page entry,
-          // ensuring the central ritual scene does not depend on the spell-submission handler
-          this.video.classList.add('active-playback');
+          // The background image (0%.png) is shown initially; video starts playing when the first spell is submitted
+          this.video.classList.remove('active-playback');
         }
       };
 
@@ -488,8 +487,8 @@ export class RitualManager {
     const phase = state.awakeningPhase;
     const bg = document.getElementById('awakening-bg');
     if (bg) {
-      const pcts = ['25%', '50%', '75%', '100%'];
-      const pct = pcts[phase] || '25%';
+      const pcts = ['0%', '25%', '50%', '75%', '100%'];
+      const pct = pcts[phase] || '0%';
       const encodedPct = pct.replace('%', '%25');
       const bgUrl = `assets/main%20ui/awakning%20ritual/${encodedPct}.png`;
       bg.style.backgroundImage = `url('${bgUrl}')`;
