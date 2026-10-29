@@ -1291,6 +1291,10 @@ let last=performance.now();
 (function loop(now){
   const dt=Math.min(.05,(now-last)/1000);
   last=now;
+  if(document.hidden){
+    requestAnimationFrame(loop);
+    return;
+  }
   if(state && state.screen === 'awakened'){
     update(dt);
     draw();

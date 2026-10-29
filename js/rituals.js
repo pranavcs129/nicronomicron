@@ -6,6 +6,7 @@ import { state } from './state.js';
 import { audio } from './audio.js';
 import { DIALOGUE_SCRIPT } from './dialogue.js';
 import { renderSpellSymbols, renderDecoderGridHTML } from './dead-alphabet.js';
+import { assetLoader } from './asset-loader.js';
 
 export const RITUAL_FPS = 24.0;
 
@@ -83,18 +84,18 @@ export class RitualManager {
     this.rebindRecognition = null;
     this.rebindStage = 0;
     this.currentRebindFrame = 1;
-    this.rebindFrameCache = new Map();
-    this.rebindPendingLoads = new Map();
-    this.rebindFailedFrames = new Set();
+    this.rebindFrameCache = assetLoader.rebindFrameCache;
+    this.rebindPendingLoads = assetLoader.inFlightLoads;
+    this.rebindFailedFrames = assetLoader.failedAssets;
     this.lastDrawnRebindFrame = null;
     this.rebindAnimRafId = null;
     this.isRebindingProcessing = false;
 
     this.sealingStage = 0;
     this.currentSealingFrame = 1;
-    this.sealingFrameCache = new Map();
-    this.sealingPendingLoads = new Map();
-    this.sealingFailedFrames = new Set();
+    this.sealingFrameCache = assetLoader.sealingFrameCache;
+    this.sealingPendingLoads = assetLoader.inFlightLoads;
+    this.sealingFailedFrames = assetLoader.failedAssets;
     this.lastDrawnSealingFrame = null;
     this.sealingAnimRafId = null;
     this.isSealingProcessing = false;
@@ -577,41 +578,11 @@ export class RitualManager {
   // 2. REBINDING RITUAL (FRAME-BASED ANIMATION & 3-SPELL PROGRESSION)
   // ------------------------------------------------------------------------
   getRebindFrameUrl(num) {
-    return `rebinding_ritual_20261025_002707/rebinding_ritual_${String(num).padStart(6, '0')}.png`;
+    return assetLoader.getRebindFrameUrl(num);
   }
 
   async loadRebindFrame(num) {
-    if (this.rebindFrameCache.has(num)) {
-      return this.rebindFrameCache.get(num);
-    }
-    if (this.rebindPendingLoads.has(num)) {
-      return this.rebindPendingLoads.get(num);
-    }
-
-    const promise = new Promise((resolve) => {
-      const img = new Image();
-      const url = this.getRebindFrameUrl(num);
-      img.onload = () => {
-        if (state.screen === 'rebind' || num === 1) {
-          this.rebindFrameCache.set(num, img);
-        }
-        this.rebindPendingLoads.delete(num);
-        resolve(img);
-        if (img.decode) {
-          img.decode().catch(() => {});
-        }
-      };
-      img.onerror = (err) => {
-        console.error(`Failed to load rebind frame ${num}: ${url}`, err);
-        this.rebindFailedFrames.add(num);
-        this.rebindPendingLoads.delete(num);
-        resolve(null);
-      };
-      img.src = url;
-    });
-
-    this.rebindPendingLoads.set(num, promise);
-    return promise;
+    return assetLoader.loadRebindFrame(num);
   }
 
   drawRebindFrame(frameNum) {
@@ -630,32 +601,41 @@ export class RitualManager {
   }
 
   async preloadRebindRange(start, end) {
-    const concurrency = 3;
-    const queue = [];
-    for (let i = start; i <= end; i++) {
-      if (!this.rebindFrameCache.has(i) && !this.rebindPendingLoads.has(i) && !this.rebindFailedFrames.has(i)) {
-        queue.push(i);
-      }
-    }
-    if (queue.length === 0) return;
-
-    let index = 0;
-    const workers = Array(Math.min(concurrency, queue.length)).fill(0).map(async () => {
-      while (index < queue.length) {
-        const frameNum = queue[index++];
-        await this.loadRebindFrame(frameNum);
-      }
-    });
-    await Promise.all(workers);
+    return assetLoader.preloadFrameRange('rebind', start, end);
   }
 
-  playRebindSequence(startFrame, endFrame, onComplete) {
+  async playRebindSequence(startFrame, endFrame, onComplete) {
     if (this.rebindAnimRafId) {
       cancelAnimationFrame(this.rebindAnimRafId);
       this.rebindAnimRafId = null;
     }
 
     this.isRebindingProcessing = true;
+
+    // Check if initial frames of segment are ready
+    const loader = document.getElementById('rebind-segment-loader');
+    const loaderText = document.getElementById('rebind-loader-text');
+    const neededInitial = [startFrame];
+    if (startFrame + 1 <= endFrame) neededInitial.push(startFrame + 1);
+    if (startFrame + 2 <= endFrame) neededInitial.push(startFrame + 2);
+
+    const missingInitial = neededInitial.filter(f => !this.rebindFrameCache.has(f));
+    if (missingInitial.length > 0) {
+      if (loader) {
+        if (loaderText) loaderText.textContent = 'CONVERGING SEALS…';
+        loader.classList.add('active');
+      }
+      await Promise.all(missingInitial.map(f => this.loadRebindFrame(f)));
+      if (loader) {
+        loader.classList.remove('active');
+      }
+    }
+
+    if (state.screen !== 'rebind') {
+      this.isRebindingProcessing = false;
+      return;
+    }
+
     let current = startFrame;
     this.currentRebindFrame = current;
     this.drawRebindFrame(current);
@@ -685,7 +665,7 @@ export class RitualManager {
       if (elapsed >= frameDuration) {
         const nextFrame = current + 1;
         const nextImg = this.rebindFrameCache.get(nextFrame);
-        const isFailed = this.rebindFailedFrames.has(nextFrame);
+        const isFailed = assetLoader.failedAssets.has(this.getRebindFrameUrl(nextFrame));
 
         if (nextImg && nextImg.complete && nextImg.naturalWidth > 0) {
           current = nextFrame;
@@ -694,11 +674,7 @@ export class RitualManager {
           lastFrameTime = now - (elapsed % frameDuration);
 
           // Free past frames to conserve memory
-          if (current > startFrame + 6) {
-            for (let f = startFrame; f < current - 5; f++) {
-              this.rebindFrameCache.delete(f);
-            }
-          }
+          assetLoader.prunePastFrames('rebind', startFrame, current);
         } else if (isFailed) {
           console.error(`Skipping failed rebind frame ${nextFrame} to prevent ritual deadlock`);
           current = nextFrame;
@@ -728,12 +704,12 @@ export class RitualManager {
   cleanupRebind() {
     this.stopRebindAnimation();
     if (this.rebindRecognition && this.isRebindListening) {
-      try { this.rebindRecognition.stop(); } catch (_) {}
+      try { this.rebindRecognition.stop(); } catch (e) {}
       this.isRebindListening = false;
     }
-    this.rebindFrameCache.clear();
-    this.rebindPendingLoads.clear();
-    this.rebindFailedFrames.clear();
+    const mic = document.getElementById('rebind-mic');
+    if (mic) mic.classList.remove('listening');
+    assetLoader.clearRitualCache('rebind');
     this.lastDrawnRebindFrame = null;
     this.rebindIntroPlayed = false;
     this.rebindStage = 0;
@@ -1121,41 +1097,11 @@ export class RitualManager {
   // 3. SEALING RITUAL (FRAME-BASED ANIMATION & 4-SPELL PROGRESSION)
   // ------------------------------------------------------------------------
   getSealingFrameUrl(num) {
-    return `sealing_ritual_20261025_003823/sealing_ritual_${String(num).padStart(6, '0')}.png`;
+    return assetLoader.getSealingFrameUrl(num);
   }
 
   async loadSealingFrame(num) {
-    if (this.sealingFrameCache.has(num)) {
-      return this.sealingFrameCache.get(num);
-    }
-    if (this.sealingPendingLoads.has(num)) {
-      return this.sealingPendingLoads.get(num);
-    }
-
-    const promise = new Promise((resolve) => {
-      const img = new Image();
-      const url = this.getSealingFrameUrl(num);
-      img.onload = () => {
-        if (state.screen === 'sealing' || num === 1) {
-          this.sealingFrameCache.set(num, img);
-        }
-        this.sealingPendingLoads.delete(num);
-        resolve(img);
-        if (img.decode) {
-          img.decode().catch(() => {});
-        }
-      };
-      img.onerror = (err) => {
-        console.error(`Failed to load sealing frame ${num}: ${url}`, err);
-        this.sealingFailedFrames.add(num);
-        this.sealingPendingLoads.delete(num);
-        resolve(null);
-      };
-      img.src = url;
-    });
-
-    this.sealingPendingLoads.set(num, promise);
-    return promise;
+    return assetLoader.loadSealingFrame(num);
   }
 
   drawSealingFrame(frameNum) {
@@ -1174,32 +1120,41 @@ export class RitualManager {
   }
 
   async preloadSealingRange(start, end) {
-    const concurrency = 3;
-    const queue = [];
-    for (let i = start; i <= end; i++) {
-      if (!this.sealingFrameCache.has(i) && !this.sealingPendingLoads.has(i) && !this.sealingFailedFrames.has(i)) {
-        queue.push(i);
-      }
-    }
-    if (queue.length === 0) return;
-
-    let index = 0;
-    const workers = Array(Math.min(concurrency, queue.length)).fill(0).map(async () => {
-      while (index < queue.length) {
-        const frameNum = queue[index++];
-        await this.loadSealingFrame(frameNum);
-      }
-    });
-    await Promise.all(workers);
+    return assetLoader.preloadFrameRange('sealing', start, end);
   }
 
-  playSealingSequence(startFrame, endFrame, onComplete) {
+  async playSealingSequence(startFrame, endFrame, onComplete) {
     if (this.sealingAnimRafId) {
       cancelAnimationFrame(this.sealingAnimRafId);
       this.sealingAnimRafId = null;
     }
 
     this.isSealingProcessing = true;
+
+    // Check if initial frames of segment are ready
+    const loader = document.getElementById('sealing-segment-loader');
+    const loaderText = document.getElementById('sealing-loader-text');
+    const neededInitial = [startFrame];
+    if (startFrame + 1 <= endFrame) neededInitial.push(startFrame + 1);
+    if (startFrame + 2 <= endFrame) neededInitial.push(startFrame + 2);
+
+    const missingInitial = neededInitial.filter(f => !this.sealingFrameCache.has(f));
+    if (missingInitial.length > 0) {
+      if (loader) {
+        if (loaderText) loaderText.textContent = 'MANIFESTING SIGIL…';
+        loader.classList.add('active');
+      }
+      await Promise.all(missingInitial.map(f => this.loadSealingFrame(f)));
+      if (loader) {
+        loader.classList.remove('active');
+      }
+    }
+
+    if (state.screen !== 'sealing') {
+      this.isSealingProcessing = false;
+      return;
+    }
+
     let current = startFrame;
     this.currentSealingFrame = current;
     this.drawSealingFrame(current);
@@ -1229,7 +1184,7 @@ export class RitualManager {
       if (elapsed >= frameDuration) {
         const nextFrame = current + 1;
         const nextImg = this.sealingFrameCache.get(nextFrame);
-        const isFailed = this.sealingFailedFrames.has(nextFrame);
+        const isFailed = assetLoader.failedAssets.has(this.getSealingFrameUrl(nextFrame));
 
         if (nextImg && nextImg.complete && nextImg.naturalWidth > 0) {
           current = nextFrame;
@@ -1238,11 +1193,7 @@ export class RitualManager {
           lastFrameTime = now - (elapsed % frameDuration);
 
           // Free past frames to conserve memory
-          if (current > startFrame + 6) {
-            for (let f = startFrame; f < current - 5; f++) {
-              this.sealingFrameCache.delete(f);
-            }
-          }
+          assetLoader.prunePastFrames('sealing', startFrame, current);
         } else if (isFailed) {
           console.error(`Skipping failed sealing frame ${nextFrame} to prevent ritual deadlock`);
           current = nextFrame;
@@ -1270,9 +1221,7 @@ export class RitualManager {
 
   cleanupSealing() {
     this.stopSealingAnimation();
-    this.sealingFrameCache.clear();
-    this.sealingPendingLoads.clear();
-    this.sealingFailedFrames.clear();
+    assetLoader.clearRitualCache('sealing');
     this.lastDrawnSealingFrame = null;
     this.sealingStage = 0;
   }

@@ -165,7 +165,8 @@ export class DialogueEngine {
           this.isStreaming = false;
           if (this.entity && this.entity.setState) this.entity.setState('idle');
           
-          setTimeout(() => {
+          if (this.subtitleTimeout) clearTimeout(this.subtitleTimeout);
+          this.subtitleTimeout = setTimeout(() => {
             if (subtitleEl && !this.isStreaming) {
               subtitleEl.classList.remove('speaking', 'on');
             }
@@ -198,6 +199,10 @@ export class DialogueEngine {
 
   interruptSpeech() {
     this.isStreaming = false;
+    if (this.subtitleTimeout) {
+      clearTimeout(this.subtitleTimeout);
+      this.subtitleTimeout = null;
+    }
     if (this.typeInterval) {
       clearInterval(this.typeInterval);
       this.typeInterval = null;

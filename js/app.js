@@ -10,6 +10,7 @@ import { DialogueEngine, DIALOGUE_SCRIPT } from './dialogue.js';
 import { VisionManager } from './vision.js';
 import { AbilityManager } from './abilities.js';
 import { RitualManager } from './rituals.js';
+import { assetLoader } from './asset-loader.js';
 
 class NecronomiconApp {
   constructor() {
@@ -25,6 +26,51 @@ class NecronomiconApp {
     console.log('Awakening Necronomicon Ex-Mortis...');
     window.app = this;
     window.state = state;
+
+    // 0. Coordinate Cinematic Initial Loading Screen (Stage A)
+    const loadingScreen = document.getElementById('initial-loading-screen');
+    const loadingStatus = document.getElementById('loading-status');
+    const loadingFill = document.getElementById('loading-bar-fill');
+    const loadingPercent = document.getElementById('loading-percent');
+    const loadingDesc = document.getElementById('loading-asset-desc');
+    const loadingErrorBox = document.getElementById('loading-error-box');
+    const loadingErrorMsg = document.getElementById('loading-error-msg');
+    const loadingRetryBtn = document.getElementById('loading-retry-btn');
+
+    const executeInitialLoad = async () => {
+      if (loadingErrorBox) loadingErrorBox.classList.remove('visible');
+      const ready = await assetLoader.loadStageA(
+        (pct, msg) => {
+          if (loadingFill) loadingFill.style.width = `${pct}%`;
+          if (loadingPercent) loadingPercent.textContent = `${pct}%`;
+          if (loadingStatus) loadingStatus.textContent = msg;
+          if (loadingDesc) loadingDesc.textContent = pct < 100 ? 'CONVERGING ESSENTIAL TOMES' : 'PORTAL OPENED';
+        },
+        (errMsg) => {
+          if (loadingErrorBox) loadingErrorBox.classList.add('visible');
+          if (loadingErrorMsg) loadingErrorMsg.textContent = `${errMsg}.`;
+        }
+      );
+
+      if (ready) {
+        setTimeout(() => {
+          if (loadingScreen) {
+            loadingScreen.classList.add('fade-out');
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 850);
+          }
+          // Progressive preloading of Stage B (Awakening frames and ritual video)
+          assetLoader.loadStageBAwakening();
+        }, 350);
+      }
+    };
+
+    if (loadingRetryBtn) {
+      loadingRetryBtn.addEventListener('click', () => executeInitialLoad());
+    }
+
+    executeInitialLoad();
 
     // 1. Initialize core managers
     this.model = NecronomiconModel;

@@ -21,8 +21,41 @@
   <link rel="stylesheet" href="css/vision.css">
   <link rel="stylesheet" href="css/rituals.css">
   <link rel="stylesheet" href="css/archives-relics.css">
+  <link rel="stylesheet" href="css/loading.css">
 </head>
 <body>
+
+  <!-- Cinematic Initial Loading Screen -->
+  <div id="initial-loading-screen" class="initial-loading-screen" aria-label="Loading Screen" role="dialog" aria-modal="true">
+    <div class="loading-content">
+      <div class="loading-sigil">
+        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor">
+          <circle cx="50" cy="50" r="44" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <circle cx="50" cy="50" r="32" stroke-width="1.2"/>
+          <circle cx="50" cy="50" r="16" stroke-width="1.4"/>
+          <polygon points="50,6 63,40 97,50 63,60 50,94 37,60 3,50 37,40" stroke-width="1.2" class="loading-sigil-inner"/>
+          <circle cx="50" cy="50" r="4" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <div class="loading-brand">NECRONOMICON EX-MORTIS</div>
+      <div id="loading-status" class="loading-status">Summoning ancient archives…</div>
+
+      <div class="loading-bar-track">
+        <div id="loading-bar-fill" class="loading-bar-fill"></div>
+      </div>
+
+      <div class="loading-stats">
+        <span id="loading-asset-desc">INITIATING RITUAL</span>
+        <span id="loading-percent" class="loading-percent">0%</span>
+      </div>
+
+      <div id="loading-error-box" class="loading-error-box">
+        <div id="loading-error-msg" class="loading-error-msg">A sacred artifact failed to manifest.</div>
+        <button type="button" id="loading-retry-btn" class="loading-retry-btn">RETRY RITE</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Fullscreen Atmospheric Viewport -->
   <div id="app-viewport">
@@ -738,6 +771,11 @@
           </form>
 
           <div class="rebind-diamond-ornament rebind-bottom-diamond">◇</div>
+          <!-- In-Ritual Segment Loading Indicator -->
+          <div id="rebind-segment-loader" class="ritual-segment-loader" aria-live="polite">
+            <div class="ritual-loader-spinner"></div>
+            <span id="rebind-loader-text">CONVERGING SEALS…</span>
+          </div>
           <div id="rebind-feedback" class="rebind-feedback-text" role="status" aria-live="polite"></div>
         </div>
       </div>
@@ -796,6 +834,11 @@
               </svg>
             </button>
           </form>
+          <!-- In-Ritual Segment Loading Indicator -->
+          <div id="sealing-segment-loader" class="ritual-segment-loader" aria-live="polite">
+            <div class="ritual-loader-spinner"></div>
+            <span id="sealing-loader-text">MANIFESTING SIGIL…</span>
+          </div>
           <div id="sealing-feedback" class="rebind-feedback-text" role="status" aria-live="polite"></div>
         </div>
       </div>
