@@ -949,25 +949,40 @@ const AUDIO={
   PW_DS_01:"",        // Dead Sight. Look carefully. What is hidden does not like to be seen.
   PW_DS_F1:"",        // Nothing here yet. You spent my patience on empty air.
   /* ---- STAB ---- */
-  STAB_01a:"The chains hold... for now.",
-  STAB_01b:"The binding settles. Do not test my limits again.",
-  STAB_01c:"Steady again. Do not make a habit of it.",
-  STAB_01d:"The embers calm. Tread carefully.",
+  STAB_01a:"AW/STAB_01a.mp3",
+  STAB_01b:"AW/STAB_01b.mp3",
+  STAB_01c:"AW/STAB_01c.mp3",
+  STAB_01d:"AW/STAB_01d.mp3",
   /* ---- UNST ---- */
-  UNST_01a:"The binding is straining. Stop reaching into my power.",
-  UNST_01b:"The chains are cracking! One more reach and I will not be answerable for what comes through.",
-  UNST_01c:"Stop straining the seal!",
-  UNST_01d:"You are playing with forces you cannot contain.",
-  UNST_01e:"The dark ones stir at your recklessness.",
+  UNST_01a:"AW/UNST_01a.mp3",
+  UNST_01b:"AW/UNST_01b.mp3",
+  UNST_01c:"AW/UNST_01c.mp3",
+  UNST_01d:"AW/UNST_01d.mp3",
+  UNST_01e:"AW/UNST_01e.mp3",
   /* ---- CRIT ---- */
-  CRIT_01a:"The binding cannot hold this power!",
-  CRIT_01b:"The seals are failing! Rebind the entity before it breaks free!",
-  CRIT_01c:"You have lost control! Rebind me or be consumed!",
-  CRIT_01d:"The chains are shattering! Speak the words of confinement!",
+  CRIT_01a:"AW/CRIT_01a.mp3",
+  CRIT_01b:"AW/CRIT_01b.mp3",
+  CRIT_01c:"AW/CRIT_01c.mp3",
+  CRIT_01d:"AW/CRIT_01d.mp3",
   /* ---- INS ---- */
-  INS_01:"The binding is straining. Stop reaching into my power.",
-  INS_02:"The chains are cracking! Rebind the entity before it breaks free!",
-  INS_03:"You have given me room to move. Now watch what happens.",
+  INS_01:"AW/UNST_01a.mp3",
+  INS_02:"AW/UNST_01b.mp3",
+  INS_03:"AW/CRIT_01a.mp3",
+  /* ---- Lore & Clue Aliases ---- */
+  LO_ASH:"AW/LO_03.mp3",
+  LO_KNOWBY:"AW/LO_04.mp3",
+  LO_DARKONES:"AW/LO_05.mp3",
+  LO_DEMON:"AW/LO_06.mp3",
+  PW_DS:"AW/CL_01.mp3",
+  PW_BW:"AW/CL_02.mp3",
+  PW_CO:"AW/CL_03.mp3",
+  /* ---- Sarcastic Retort Fallbacks ---- */
+  FB_01:"AW/CO_04.mp3",
+  FB_02:"AW/AW_04.mp3",
+  FB_03:"AW/CO_05.mp3",
+  FB_04:"AW/AW_06.mp3",
+  FB_05:"AW/TR_early.mp3",
+  FB_06:"AW/RB1_02.mp3",
   /* ---- PT ---- */
   PT_01:"",           // You do not need to flee this world. You need the thing hunting you to leave it. A contr...
   PT_02:"",           // (not used by the engine yet)
@@ -1021,25 +1036,63 @@ async function playAudio(id){
                   (typeof audio !== 'undefined' && audio && audio.isMuted);
   if(isMuted) return null;
 
-  const primary = AUDIO[id];
-  const srcs = [];
-  if (primary && primary.trim()) srcs.push(primary);
-  srcs.push('AW/' + id + '.mp3');
-  srcs.push('audio/AW/' + id + '.mp3');
-  srcs.push('audio/' + id + '.mp3');
-  
-  for(const src of srcs){
-    const a = new Audio(src);
-    a.volume = 0.9;
-    const ok = await new Promise(r => {
-      a.onloadedmetadata = () => r(true);
-      a.onerror = () => r(false);
-      setTimeout(() => r(false), 1500);
-    });
-    if(ok){
-      curA = a;
-      a.play().catch(()=>{});
-      return a;
+  let primary = AUDIO[id];
+  if (!primary || typeof primary !== 'string' || !primary.trim() || !primary.endsWith('.mp3')) {
+    primary = 'AW/' + id + '.mp3';
+  }
+
+  const srcs = [primary, 'AW/' + id + '.mp3', 'audio/' + id + '.mp3', 'audio/AW/' + id + '.mp3'];
+  const uniqueSrcs = [...new Set(srcs.filter(Boolean))];
+
+  for(const src of uniqueSrcs){
+    try {
+      const a = new Audio(src);
+      a.volume = 0.9;
+      a.preload = 'auto';
+
+      const ok = await new Promise(r => {
+        if (a.readyState >= 1) return r(true);
+        const onLoaded = () => { cleanup(); r(true); };
+        const onError = () => { cleanup(); r(false); };
+        const timer = setTimeout(() => { cleanup(); r(false); }, 1200);
+        const cleanup = () => {
+          clearTimeout(timer);
+          a.removeEventListener('loadedmetadata', onLoaded);
+          a.removeEventListener('canplay', onLoaded);
+          a.removeEventListener('error', onError);
+        };
+        a.addEventListener('loadedmetadata', onLoaded, { once: true });
+        a.addEventListener('canplay', onLoaded, { once: true });
+        a.addEventListener('error', onError, { once: true });
+        a.load();
+      });
+
+      if(ok){
+        curA = a;
+        try {
+          const playPromise = a.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+          }
+          return a;
+        } catch (err) {
+          console.warn(`[Audio] Autoplay restriction or play error for ${src}:`, err.name, err.message);
+          if (err.name === 'NotAllowedError') {
+            const unlockHandler = () => {
+              a.play().catch(e => console.warn('[Audio] Delayed play error:', e));
+              window.removeEventListener('click', unlockHandler);
+              window.removeEventListener('keydown', unlockHandler);
+              window.removeEventListener('touchstart', unlockHandler);
+            };
+            window.addEventListener('click', unlockHandler, { once: true });
+            window.addEventListener('keydown', unlockHandler, { once: true });
+            window.addEventListener('touchstart', unlockHandler, { once: true });
+          }
+          return a;
+        }
+      }
+    } catch(e) {
+      console.warn(`[Audio] Exception loading candidate ${src}:`, e);
     }
   }
   return null;
@@ -1213,7 +1266,6 @@ async function reply(t){
   }
   else if(/kandarian/i.test(t))id='LO_06';
   if(!id){const m=R.find(r=>r[0].test(t));id=m?m[1]:'FB'}
-  if(id!=='FB'&&F.said.has(id)&&!/^(CL_|GATE|TR_|PW_01|RB1_)/.test(id))id='FB';
   if(id==='FB'){
     if(!F.bag.length)F.bag=[1,2,3,4,5,6].sort(()=>Math.random()-.5).filter(n=>'FB_0'+n!==F.lastFB);
     F.lastFB='FB_0'+F.bag.pop();

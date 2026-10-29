@@ -9,6 +9,7 @@ import { renderSpellSymbols, renderDecoderGridHTML } from './dead-alphabet.js';
 import { assetLoader } from './asset-loader.js';
 
 export const RITUAL_FPS = 24.0;
+export const SEALING_FPS = 30.0;
 
 export const RITUAL_STAGES = [
   {
@@ -661,6 +662,12 @@ export class RitualManager {
         return;
       }
 
+      // Proactively preload next segment when halfway through current segment
+      if (current === Math.floor(startFrame + (endFrame - startFrame) * 0.5)) {
+        if (endFrame === 43) this.preloadRebindRange(43, 108);
+        else if (endFrame === 108) this.preloadRebindRange(108, 192);
+      }
+
       const elapsed = now - lastFrameTime;
       if (elapsed >= frameDuration) {
         const nextFrame = current + 1;
@@ -678,10 +685,9 @@ export class RitualManager {
         } else if (isFailed) {
           console.error(`Skipping failed rebind frame ${nextFrame} to prevent ritual deadlock`);
           current = nextFrame;
-          lastFrameTime = now;
+          lastFrameTime = now - (elapsed % frameDuration);
         } else {
-          // Frame not yet ready, hold current frame
-          lastFrameTime = now;
+          // Frame not yet ready, hold current frame without resetting lastFrameTime to prevent artificial double-waiting
         }
       }
 
@@ -1162,7 +1168,7 @@ export class RitualManager {
     // Queue active segment frames in sequential order with top priority
     this.preloadSealingRange(startFrame, endFrame);
 
-    const frameDuration = 1000 / RITUAL_FPS;
+    const frameDuration = 1000 / SEALING_FPS;
     let lastFrameTime = performance.now();
 
     const step = (now) => {
@@ -1178,6 +1184,13 @@ export class RitualManager {
         this.sealingAnimRafId = null;
         if (onComplete) onComplete();
         return;
+      }
+
+      // Proactively preload next segment when halfway through current segment
+      if (current === Math.floor(startFrame + (endFrame - startFrame) * 0.5)) {
+        if (endFrame === 55) this.preloadSealingRange(55, 113);
+        else if (endFrame === 113) this.preloadSealingRange(113, 133);
+        else if (endFrame === 133) this.preloadSealingRange(133, 192);
       }
 
       const elapsed = now - lastFrameTime;
@@ -1197,10 +1210,9 @@ export class RitualManager {
         } else if (isFailed) {
           console.error(`Skipping failed sealing frame ${nextFrame} to prevent ritual deadlock`);
           current = nextFrame;
-          lastFrameTime = now;
+          lastFrameTime = now - (elapsed % frameDuration);
         } else {
-          // Frame not yet ready, hold current frame
-          lastFrameTime = now;
+          // Frame not yet ready, hold current frame without resetting lastFrameTime to prevent artificial double-waiting
         }
       }
 
@@ -1216,7 +1228,6 @@ export class RitualManager {
       this.sealingAnimRafId = null;
     }
     this.isSealingProcessing = false;
-    this.lastDrawnSealingFrame = null;
   }
 
   cleanupSealing() {
@@ -1366,7 +1377,7 @@ export class RitualManager {
           input.focus();
         }
         // Preload next range while user types CLAUDE
-        this.preloadSealingRange(56, 113);
+        this.preloadSealingRange(55, 113);
       });
 
     } else if (this.sealingStage === 1) {
@@ -1396,7 +1407,7 @@ export class RitualManager {
           input.focus();
         }
         // Preload next range while user types VELSIGIL
-        this.preloadSealingRange(114, 133);
+        this.preloadSealingRange(113, 133);
       });
 
     } else if (this.sealingStage === 2) {
@@ -1426,7 +1437,7 @@ export class RitualManager {
           input.focus();
         }
         // Preload final range while user types MORTIGIL
-        this.preloadSealingRange(134, 192);
+        this.preloadSealingRange(133, 192);
       });
 
     } else if (this.sealingStage === 3) {

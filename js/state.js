@@ -132,7 +132,7 @@ class AppState {
           window.NecronomiconModel.Entity.setMood('frenzy');
         }
       }
-      if (prev < 75 && this.instability >= 75 && window.NecronomiconModel.speak) {
+      if (prev < 75 && this.instability >= 75 && !this.rebindPending && window.NecronomiconModel.speak) {
         window.NecronomiconModel.speak('CRIT_01b');
       }
     }

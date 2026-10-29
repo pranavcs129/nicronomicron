@@ -60,10 +60,10 @@ export const DIALOGUE_SCRIPT = {
   CO_04: { id: 'CO_04', emotion: 'amused', text: 'Of course I am manipulating you. You’re trying to use me, too. The difference is that I am rather better at it.' },
 
   // Act 9: Lore & Clues
-  LO_ASH: { id: 'LO_ASH', emotion: 'irritated', text: 'Ash Williams. A persistent human who interfered with my affairs. He survived horrors that should have ended him with a chainsaw and foolish luck. Do not mistake my irritation for admiration.' },
-  LO_KNOWBY: { id: 'LO_KNOWBY', emotion: 'dismissive', text: 'Professor Raymond Knowby. A scholar who translated my pages at the cabin. Like so many humans, he believed understanding something meant he could control it. He learned otherwise.' },
-  LO_DARKONES: { id: 'LO_DARKONES', emotion: 'evasive', text: 'The Dark Ones. Ancient powers connected to the deeper history surrounding my bound skin. Their true nature is not something you should reduce to a bedtime story.' },
-  LO_DEMON: { id: 'LO_DEMON', emotion: 'cold', text: 'The Kandarian Demon is an ancient incorporeal force of chaos. Deadites are mere puppets it twists. Do not mistake a physical thrall for the entity controlling it.' },
+  LO_ASH: { id: 'LO_03', emotion: 'irritated', text: 'Ash Williams. A persistent human who interfered with my affairs. Do not mistake my irritation for admiration.' },
+  LO_KNOWBY: { id: 'LO_04', emotion: 'dismissive', text: 'Professor Raymond Knowby. A scholar who translated my pages at the cabin. Like so many humans, he believed understanding something meant he could control it. He learned otherwise.' },
+  LO_DARKONES: { id: 'LO_05', emotion: 'evasive', text: 'The Dark Ones. Ancient powers connected to the deeper history surrounding my bound skin. Their true nature is not something you should reduce to a bedtime story.' },
+  LO_DEMON: { id: 'LO_06', emotion: 'cold', text: 'The Kandarian Demon is an ancient incorporeal force of chaos. Deadites are mere puppets it twists. Do not mistake a physical thrall for the entity controlling it.' },
 
   // Original Clues for Counter-Ritual
   CL_01: { id: 'CL_01', emotion: 'storyteller, low', text: 'Clue 1: The Anchor. A door between worlds will not hold on its own. It must be pinned to something the visitor cannot stop returning to in your room. Use Dead Sight to reveal it.' },
@@ -71,9 +71,9 @@ export const DIALOGUE_SCRIPT = {
   CL_03: { id: 'CL_03', emotion: 'storyteller, quiet', text: 'Clue 3: The Casting-Out. A weakened manifestation cannot be killed. It can be cast out. Weak, pinned and held, it can be driven back through the very door it used to enter!' },
 
   // Act 12: Powers & Instability
-  PW_DS: { id: 'PW_DS', emotion: 'intrigued', text: 'Dead Sight activated. Look carefully through the Vision lens. What is hidden does not like to be seen.' },
-  PW_BW: { id: 'PW_BW', emotion: 'cold', text: 'Binding Word spoken. The passage clasps shut upon the manifestation. Observe the strain on the chains.' },
-  PW_CO: { id: 'PW_CO', emotion: 'dark, awed', text: 'Casting-Out! The heavy rite strikes the weakened Demon. The breach tears open—it is expelled into the abyss!' },
+  PW_DS: { id: 'PW_DS_01', emotion: 'intrigued', text: 'Dead Sight activated. Look carefully through the Vision lens. What is hidden does not like to be seen.' },
+  PW_BW: { id: 'PW_BW_01', emotion: 'cold', text: 'Binding Word spoken. The passage clasps shut upon the manifestation. Observe the strain on the chains.' },
+  PW_CO: { id: 'PW_CO_01', emotion: 'dark, awed', text: 'Casting-Out! The heavy rite strikes the weakened Demon. The breach tears open—it is expelled into the abyss!' },
 
   // Instability Warnings
   INS_01: { id: 'INS_01', emotion: 'uneasy', text: 'The binding is straining. Stop reaching blindly into my power.' },
@@ -104,17 +104,26 @@ export class DialogueEngine {
   constructor(entityRenderer) {
     this.entity = entityRenderer;
     this.isStreaming = false;
+    this.currentSpeakingId = null;
     this.speechSynthesis = window.speechSynthesis || null;
   }
 
   async speak(dialogueObj, onComplete = null) {
     if (!dialogueObj) return;
+
+    const id = typeof dialogueObj === 'string' ? dialogueObj : (dialogueObj.id || null);
+    const text = typeof dialogueObj === 'string' ? dialogueObj : (dialogueObj.text || '');
+
+    // Prevent duplicate audio trigger if the exact same line is already actively playing
+    if (this.isStreaming && id && this.currentSpeakingId === id) {
+      return;
+    }
+
     this.interruptSpeech();
     this.isStreaming = true;
+    this.currentSpeakingId = id;
     
     // Update state memory
-    const text = typeof dialogueObj === 'string' ? dialogueObj : (dialogueObj.text || '');
-    const id = typeof dialogueObj === 'string' ? dialogueObj : (dialogueObj.id || null);
     state.addMessage('book', text);
 
     if (window.NecronomiconModel) {
@@ -124,6 +133,7 @@ export class DialogueEngine {
         await window.NecronomiconModel.Entity.say(text);
       }
       this.isStreaming = false;
+      this.currentSpeakingId = null;
       if (onComplete) onComplete();
       return;
     }

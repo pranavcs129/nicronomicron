@@ -123,14 +123,27 @@ class NecronomiconApp {
       this.renderState(state);
     }
 
-    // First user gesture initializes audio context
+    // First user gesture initializes audio context and unlocks HTMLAudioElement playback
     const unlockAudio = () => {
       audio.ensureContext();
+      try {
+        const dummy = new Audio();
+        dummy.volume = 0;
+        dummy.muted = true;
+        const p = dummy.play();
+        if (p !== undefined) {
+          p.then(() => {
+            dummy.pause();
+          }).catch(() => {});
+        }
+      } catch (e) {}
       window.removeEventListener('click', unlockAudio);
       window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
     };
     window.addEventListener('click', unlockAudio);
     window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
   }
 
   // ------------------------------------------------------------------------
