@@ -733,7 +733,7 @@ function watchTick(w){PR.inter+=w;
   if(PR.nextLook<=0&&PR.inter>=4)PR.nextLook=rnd(9,20)*(PR.seen<2?1:.8)}   // arm only after a few interactions
 const LOOKS=['eyes','smoke','core'];
 setInterval(()=>{
-  if(E.ph||document.hidden||PR.inter<4)return;
+  if((state && state.screen !== 'awakened')||E.ph||document.hidden||PR.inter<4)return;
   if(PR.nextLook>0)return;                                     // armed timer still counting down
   PR.nextLook=rnd(10,26);
   if(Math.random()<.4)return;                                  // 40%: nothing happens
@@ -1288,7 +1288,15 @@ if(typeof window !== 'undefined' && window.state){
 }
 setMood();
 let last=performance.now();
-(function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)})(last);
+(function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);
+  last=now;
+  if(state && state.screen === 'awakened'){
+    update(dt);
+    draw();
+  }
+  requestAnimationFrame(loop);
+})(last);
 
 export const NecronomiconModel = {
   Entity,

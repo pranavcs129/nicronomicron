@@ -120,7 +120,7 @@ export class RitualManager {
     // before the screen becomes visible (prevents blank/black screen on entry)
     const bg = document.getElementById('awakening-bg');
     if (bg) {
-      const initialBgUrl = 'assets/main ui/awakning ritual/0%.png';
+      const initialBgUrl = 'assets/main ui/awakning ritual/25%.png';
       const preloadImg = new Image();
       preloadImg.onload = () => {
         // Only set if still at phase 0 to avoid overwriting a later phase
@@ -465,8 +465,8 @@ export class RitualManager {
     const phase = state.awakeningPhase;
     const bg = document.getElementById('awakening-bg');
     if (bg) {
-      const pcts = ['0%', '25%', '50%', '75%', '100%'];
-      const pct = pcts[phase] || '100%';
+      const pcts = ['25%', '50%', '75%', '100%'];
+      const pct = pcts[phase] || '25%';
       const bgUrl = `assets/main ui/awakning ritual/${pct}.png`;
       bg.style.backgroundImage = `url('${bgUrl}')`;
       bg.style.backgroundSize = 'cover';
@@ -565,7 +565,7 @@ export class RitualManager {
   }
 
   async preloadRebindRange(start, end) {
-    const concurrency = 4;
+    const concurrency = 2;
     const queue = [];
     for (let i = start; i <= end; i++) {
       if (!this.rebindFrameCache.has(i)) {
@@ -641,6 +641,7 @@ export class RitualManager {
       cancelAnimationFrame(this.rebindAnimRafId);
       this.rebindAnimRafId = null;
     }
+    this.stopRebindSparks();
     this.isRebindingProcessing = false;
   }
 
@@ -1073,7 +1074,7 @@ export class RitualManager {
   }
 
   async preloadSealingRange(start, end) {
-    const concurrency = 4;
+    const concurrency = 2;
     const queue = [];
     for (let i = start; i <= end; i++) {
       if (!this.sealingFrameCache.has(i)) {
